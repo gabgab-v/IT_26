@@ -9,7 +9,7 @@
 <body>
     <header>
         <nav>
-            <a href="{{ route('orders.index') }}">Orders</a>
+            <a href="{{ route('admin.orders.index') }}">Orders</a>
             
             <!-- Add other navigation links as necessary -->
         </nav>

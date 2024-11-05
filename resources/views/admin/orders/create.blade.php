@@ -3,7 +3,8 @@
 
 @section('content')
     <h1>Create New Order</h1>
-    <form action="{{ route('orders.store') }}" method="POST">
+    <form action="{{ route('admin.orders.store') }}" method="POST">
+
         @csrf
 
         <label for="customer">Customer:</label>

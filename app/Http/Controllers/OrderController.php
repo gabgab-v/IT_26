@@ -12,14 +12,14 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::all();
-        return view('orders.index', compact('orders'));
+        return view('admin.orders.index', compact('orders')); // Updated path
     }
 
     // Show the form for creating a new order
     public function create()
     {
         $customers = Customer::all();  // Retrieve all customers
-        return view('orders.create', compact('customers'));
+        return view('admin.orders.create', compact('customers')); // Updated path
     }
 
     // Store a newly created order in the database
@@ -34,14 +34,14 @@ class OrderController extends Controller
         // Create the order using the validated data (order_number will be generated)
         Order::create($validated);
     
-        return redirect()->route('orders.index')->with('success', 'Order created successfully');
+        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully'); // Updated route
     }
     
 
     // Display the specified order
     public function show(Order $order)
     {
-        return view('orders.show', compact('order'));
+        return view('admin.orders.show', compact('order')); // Updated path
     }
 
     // Show the form for editing an order
@@ -50,7 +50,7 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         $customers = Customer::all(); // Fetch all customers
     
-        return view('orders.edit', compact('order', 'customers'));
+        return view('admin.orders.edit', compact('order', 'customers')); // Updated path
     }
 
     // Update the specified order in the database
@@ -65,17 +65,17 @@ class OrderController extends Controller
 
         $order->update($validated);
 
-        return redirect()->route('orders.index')->with('success', 'Order updated successfully');
+        return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully'); // Updated route
     }
 
     // Remove the specified order from the database
     public function destroy(Order $order)
     {
         $order->delete();
-        return redirect()->route('orders.index')->with('success', 'Order deleted successfully');
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully'); // Updated route
     }
 
-        // Display the tracking form
+    // Display the tracking form
     public function showTrackingForm()
     {
         return view('track-order');
@@ -100,5 +100,4 @@ class OrderController extends Controller
             return redirect()->route('track-order')->withErrors(['order_number' => 'Order not found.']);
         }
     }
-    
 }

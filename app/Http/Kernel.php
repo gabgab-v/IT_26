@@ -64,5 +64,8 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'admin' => \App\Http\Middleware\EnsureAdmin::class,
+        'auth:admin' => \App\Http\Middleware\AuthenticateAdmin::class,
+        'guest:admin' => \App\Http\Middleware\RedirectIfAuthenticatedAdmin::class, // Custom guest admin middleware
     ];
 }

@@ -16,13 +16,15 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
+    
         if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->intended(route('admin.dashboard'));
+            return redirect()->route('admin.dashboard'); // Ensures redirection to admin dashboard
         }
-
+    
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
     }
+    
+    
 
     public function logout(Request $request)
     {
