@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Models\OrderLog;
+
 
 class OrderController extends Controller
 {
@@ -56,16 +59,23 @@ class OrderController extends Controller
     // Update the specified order in the database
     public function update(Request $request, Order $order)
     {
+        // Log incoming request data
+        Log::info('Order Update Request:', $request->all());
+    
+        // Validate and log validation errors if any
         $validated = $request->validate([
             'order_number' => 'required|unique:orders,order_number,' . $order->id,
             'customer_id' => 'required',
             'total_price' => 'required|numeric',
             'status' => 'required',
         ]);
-
+    
+        Log::info('Validated Data:', $validated);
+    
+        // Update order with validated data
         $order->update($validated);
-
-        return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully'); // Updated route
+    
+        return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully');
     }
 
     // Remove the specified order from the database
@@ -92,6 +102,15 @@ class OrderController extends Controller
         // Search for the order by order number
         $order = Order::where('order_number', $request->order_number)->first();
 
+        if (auth()->check()) {
+            // Log the search
+            OrderLog::create([
+                'user_id' => auth()->id(),
+                'order_number' => $request->order_number,
+                'searched_at' => now(),
+            ]);
+        }
+
         if ($order) {
             // Return view with order details if found
             return view('order-details', ['order' => $order]);
@@ -99,5 +118,6 @@ class OrderController extends Controller
             // Redirect back with an error message if not found
             return redirect()->route('track-order')->withErrors(['order_number' => 'Order not found.']);
         }
+
     }
 }

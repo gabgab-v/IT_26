@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\SearchLog;
 
 class ProfileController extends Controller
 {
@@ -56,5 +57,11 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function showLogs()
+    {
+    $logs = SearchLog::where('user_id', Auth::id())->orderBy('searched_at', 'desc')->get();
+    return view('user.logs', compact('logs'));
     }
 }

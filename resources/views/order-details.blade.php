@@ -15,7 +15,7 @@
         <div>
             <a href="/">
                 <div class="profile-icon">
-                    <img src="{{ asset('images/jgablogo.png') }}" alt="Profile" style="width: 250px; height: auto;">
+                    <img src="{{ asset('images/jgab_logo3.png') }}" alt="Profile" style="width: 250px; height: auto;">
                 </div>
             </a>
         </div>

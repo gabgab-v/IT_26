@@ -37,18 +37,16 @@
         .logo-circle {
             width: 60px;
             height: 60px;
-            background-color: #024CAA;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-right: 15px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            margin-right: 20px;
         }
 
         .logo-circle img {
-            width: 50px;
-            height: 50px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
         }
 
@@ -157,7 +155,7 @@
     <header>
         <div class="logo">
             <div class="logo-circle">
-                <img src="{{ asset('images/jgablogo.png') }}" alt="JGAB Express Logo">
+                <img src="{{ asset('images/jgab_logo3.png') }}" alt="JGAB Express Logo">
             </div>
             <div class="logo-text">
                 <h1>JGAB Express</h1>
@@ -167,10 +165,14 @@
         <nav>
             <a href="#">About Us</a>
             <a href="#">Services</a>
-            <a href="{{ route('login') }}">Log In</a>
-            <a href="{{ route('register') }}">Register</a>
+            @guest
+                <a href="{{ route('login') }}">Log In</a>
+                <a href="{{ route('register') }}">Register</a>
+            @else
+                <a href="{{ route('user.dashboard') }}">Dashboard</a>
+            @endguest
             <!-- <div class="profile-icon">
-                <img src="{{ asset('images/jgablogo.png') }}" alt="Profile">
+                <img src="{{ asset('images/jgab_logo3.png') }}" alt="Profile">
             </div> -->
         </nav>
     </header>
