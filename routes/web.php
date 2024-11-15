@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Driver\DriverAuthController;
+use App\Http\Controllers\Driver\DriverDashboardController;
 
 Route::get('/', function () {
     return view('home');
@@ -13,7 +15,6 @@ Route::get('/', function () {
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
-
     // Guest-only routes for Admin Login
     Route::middleware('guest:admin')->group(function () {
         Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -26,10 +27,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Dashboard, Order, and Profile routes restricted to admin
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('orders', OrderController::class); // Now only admins can access Order routes
+        Route::resource('orders', OrderController::class); // Admin access for CRUD operations
 
-        Route::put('admin/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update');
-
+        // Assign Driver routes
+        Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])
+            ->name('orders.assign_driver_page');
+        Route::post('orders/{order}/assign-driver', [OrderController::class, 'assignDriver'])
+            ->name('orders.assign_driver');
 
         // Profile management for admins
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -39,20 +43,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 
+// General authenticated user routes
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [UserDashboardController::class, 'showDashboard'])->name('user.dashboard');
     Route::get('/user/dashboard/logs', [UserController::class, 'showLogs'])->name('user.logs');
 });
 
-
-Route::get('/admin/test', function () {
-    return auth()->guard('admin')->check() ? 'Admin authenticated' : 'Admin not authenticated';
-})->middleware('auth:admin');
-
-
 // Public Order Tracking
 Route::get('/track-order', [OrderController::class, 'showTrackOrderForm'])->name('track-order');
 Route::post('/track-order', [OrderController::class, 'trackOrder'])->name('track-order.submit');
+
+// Driver Routes
+Route::prefix('driver')->name('driver.')->group(function () {
+    // Driver Authentication Routes
+    Route::get('/login', [DriverAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [DriverAuthController::class, 'login']);
+    Route::get('/register', [DriverAuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [DriverAuthController::class, 'register']);
+
+    // Only accessible if authenticated as a driver
+    Route::middleware('auth:driver')->group(function () {
+        Route::get('/dashboard', [DriverDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/logout', [DriverAuthController::class, 'logout'])->name('logout');
+    });
+});
 
 require __DIR__.'/auth.php';

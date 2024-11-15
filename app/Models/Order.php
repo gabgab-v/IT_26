@@ -31,4 +31,9 @@ class Order extends Model
 
         return $orderNumber;
     }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class); // Adjust the class name and namespace as needed
+    }
 }

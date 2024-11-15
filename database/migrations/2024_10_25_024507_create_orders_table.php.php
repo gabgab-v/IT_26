@@ -18,6 +18,7 @@ return new class extends Migration
         $table->decimal('total_price', 10, 2);
         $table->string('order_number')->unique();  // Will be generated automatically
         $table->string('status')->default('Pending');
+        $table->foreignId('driver_id')->nullable()->constrained('drivers')->onDelete('set null');
         $table->timestamps();
         
         // Add the foreign key constraint

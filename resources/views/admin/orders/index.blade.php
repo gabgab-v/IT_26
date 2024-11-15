@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-    <!-- Header styling and logo structure if required -->
     <header>
         <div class="logo">
             <div class="logo-circle">
@@ -36,27 +35,33 @@
                     <th>Customer</th>
                     <th>Total Price</th>
                     <th>Status</th>
+                    <th>Driver</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($orders as $order)
-                    <tr>
-                        <td>{{ $order->order_number }}</td>
-                        <td>{{ $order->customer ? $order->customer->name : 'No customer' }}</td>
-                        <td>{{ $order->total_price }}</td>
-                        <td>{{ $order->status }}</td>
-                        <td>
-                            <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
-                            <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
-                            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="search-btn">Cancel</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
+            @foreach ($orders as $order)
+                <tr>
+                    <td>{{ $order->order_number }}</td>
+                    <td>{{ $order->customer ? $order->customer->name : 'No customer' }}</td>
+                    <td>{{ $order->total_price }}</td>
+                    <td>{{ $order->status }}</td>
+                    <td>
+                        <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
+                        <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
+                        <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="search-btn">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+
+
             </tbody>
         </table>
     </section>
@@ -150,4 +155,34 @@
             color: #ffffff;
         }
     </style>
+    <!-- JavaScript for Assign Driver AJAX call -->
+    <script>
+        function assignDriver(orderId) {
+            let form = document.getElementById(`assignDriverForm-${orderId}`);
+            let formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Driver assigned successfully');
+                    location.reload();
+                } else {
+                    alert('Error assigning driver');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while assigning the driver.');
+            });
+        }
+
+    </script>
 @endsection

@@ -7,6 +7,7 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\OrderLog;
+use App\Models\Driver;
 
 
 class OrderController extends Controller
@@ -14,9 +15,11 @@ class OrderController extends Controller
     // Display a listing of orders
     public function index()
     {
-        $orders = Order::all();
-        return view('admin.orders.index', compact('orders')); // Updated path
+        $orders = Order::with('customer')->get();
+        $drivers = Driver::all();
+        return view('admin.orders.index', compact('orders', 'drivers'));
     }
+    
 
     // Show the form for creating a new order
     public function create()
@@ -120,4 +123,62 @@ class OrderController extends Controller
         }
 
     }
+
+    // For assigning a driver to an order
+    public function assignDriver(Request $request, $orderId)
+    {
+        $order = Order::find($orderId);
+        if (!$order) {
+            abort(404, 'Order not found');
+        }
+    
+        // Validate the request to ensure a driver ID is provided
+        $request->validate([
+            'driver_id' => 'required|exists:drivers,id', // Assuming you have a `drivers` table
+        ]);
+    
+        // Assign the driver to the order
+        $order->driver_id = $request->input('driver_id');
+        $order->save();
+    
+        return redirect()->route('admin.orders.index')->with('success', 'Driver assigned successfully.');
+    }
+    
+
+    public function assignDriverPage($orderId)
+    {
+        $order = Order::find($orderId);
+        if (!$order) {
+            abort(404, 'Order not found');
+        }
+    
+        $drivers = Driver::all(); // Assuming you have a Driver model
+    
+        return view('admin.orders.assign_driver', compact('order', 'drivers'));
+    }
+    
+    
+    
+    public function updateDriver(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'driver_id' => 'required|exists:drivers,id',
+            ]);
+    
+            $order = Order::findOrFail($id);
+            $order->driver_id = $request->input('driver_id');
+            $order->save();
+    
+            return response()->json(['success' => true, 'message' => 'Driver assigned successfully']);
+        } catch (\Exception $e) {
+            // Log the error message for debugging purposes
+            \Log::error('Driver update error: ' . $e->getMessage());
+    
+            return response()->json(['success' => false, 'message' => 'Failed to assign driver.']);
+        }
+    }
+    
+    
+
 }
