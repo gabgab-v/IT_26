@@ -14,6 +14,8 @@
         <nav>
             <a href="#">About Us</a>
             <a href="#">Services</a>
+            <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
+
         </nav>
     </header>
 
@@ -54,9 +56,11 @@
                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
                         <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
                             @csrf
-                            @method('DELETE')
-                            <button type="submit" class="search-btn">Cancel</button>
+                            @method('PATCH')
+                            <input type="hidden" name="cancel_reason" value="Customer canceled the order"> <!-- Optional default reason -->
+                            <button type="button" onclick="showCancelModal({{ $order->id }})">Cancel</button>
                         </form>
+
                     </td>
                 </tr>
             @endforeach
@@ -64,6 +68,18 @@
 
             </tbody>
         </table>
+
+        <!-- Modal for Cancel Reason -->
+        <div id="cancelModal" style="display:none;">
+            <form id="cancelForm" method="POST">
+                @csrf
+                @method('PATCH')
+                <label for="cancel_reason">Reason for Cancellation:</label>
+                <textarea name="cancel_reason" id="cancel_reason" required></textarea>
+                <button type="submit">Submit</button>
+                <button type="button" onclick="closeModal()">Close</button>
+            </form>
+        </div>
     </section>
 
     <style>
@@ -184,5 +200,16 @@
             });
         }
 
+    </script>
+    <script>
+        function showCancelModal(orderId) {
+            const form = document.getElementById('cancelForm');
+            form.action = `/admin/orders/${orderId}/cancel`;
+            document.getElementById('cancelModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+        }
     </script>
 @endsection

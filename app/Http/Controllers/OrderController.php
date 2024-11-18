@@ -15,10 +15,12 @@ class OrderController extends Controller
     // Display a listing of orders
     public function index()
     {
-        $orders = Order::with('customer')->get();
+        $orders = Order::with('customer')->where('is_archived', false)->get(); // Exclude archived orders
         $drivers = Driver::all();
+    
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
+    
     
 
     // Show the form for creating a new order
@@ -82,11 +84,26 @@ class OrderController extends Controller
     }
 
     // Remove the specified order from the database
-    public function destroy(Order $order)
+    public function destroy($id, Request $request)
     {
-        $order->delete();
-        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully'); // Updated route
+        $order = Order::findOrFail($id);
+    
+        // Check if the request includes a cancellation reason
+        if ($request->has('cancel_reason')) {
+            $order->update([
+                'status' => 'cancelled',
+                'cancel_reason' => $request->cancel_reason,
+                'is_archived' => true, // Archive the order
+            ]);
+    
+            return redirect()->route('admin.orders.index')->with('success', 'Order cancelled and archived successfully.');
+        }
+    
+        // Handle other delete or cancel logic if necessary
+        return redirect()->route('admin.orders.index')->with('error', 'Unable to process the request.');
     }
+    
+    
 
     // Display the tracking form
     public function showTrackingForm()
@@ -179,6 +196,37 @@ class OrderController extends Controller
         }
     }
     
+    public function cancel(Request $request, Order $order)
+    {
+        $request->validate([
+            'cancel_reason' => 'required|string|max:255',
+        ]);
+
+        $order->update([
+            'cancel_reason' => $request->cancel_reason,
+            'status' => 'cancelled',
+            'is_archived' => false,
+        ]);
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order cancelled successfully.');
+    }
+
+    public function archived()
+    {
+        $archivedOrders = Order::where('is_archived', true)->get();
+        Log::info($archivedOrders);
+        return view('admin.orders.archived', compact('archivedOrders'));
+    }
+
+    public function archive($orderId)
+    {
+        // Logic to archive the order
+        $order = Order::findOrFail($orderId);
+        $order->status = 'archived';
+        $order->save();
     
+        return redirect()->route('admin.orders.index')->with('success', 'Order archived successfully.');
+    }
+     
 
 }

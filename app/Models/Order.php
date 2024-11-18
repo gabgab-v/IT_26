@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'customer_id', 'total_price', 'status', 'order_number'
+        'customer_id', 'total_price', 'status', 'order_number', 'cancel_reason',
+        'is_archived',
     ];
 
     public static function boot()

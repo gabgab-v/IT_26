@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Driver\DriverAuthController;
 use App\Http\Controllers\Driver\DriverDashboardController;
 
+
 Route::get('/', function () {
     return view('home');
 })->name('home');
@@ -27,7 +28,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Dashboard, Order, and Profile routes restricted to admin
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
         Route::resource('orders', OrderController::class); // Admin access for CRUD operations
+        
+        
 
         // Assign Driver routes
         Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])
@@ -39,8 +43,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::patch('orders/{order}/cancel', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
+
+
     });
 });
+
 
 
 // General authenticated user routes
