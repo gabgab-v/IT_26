@@ -70,16 +70,46 @@
         </table>
 
         <!-- Modal for Cancel Reason -->
-        <div id="cancelModal" style="display:none;">
-            <form id="cancelForm" method="POST">
-                @csrf
-                @method('PATCH')
-                <label for="cancel_reason">Reason for Cancellation:</label>
-                <textarea name="cancel_reason" id="cancel_reason" required></textarea>
-                <button type="submit">Submit</button>
-                <button type="button" onclick="closeModal()">Close</button>
-            </form>
-        </div>
+    <div id="cancelModal" style="display:none;">
+        <form id="cancelForm" method="POST">
+            @csrf
+            @method('PATCH')
+
+            <label for="cancel_reason">Reason for Cancellation:</label>
+
+            <!-- Radio Buttons for Common Reasons -->
+            <div id="radioOptions">
+                <label>
+                    <input type="radio" name="cancel_reason" value="Changed my mind" required>
+                    Changed my mind
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="cancel_reason" value="Found a better option">
+                    Found a better option
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="cancel_reason" value="Order delayed">
+                    Order delayed
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="cancel_reason" value="Other">
+                    Other (please specify)
+                </label>
+            </div>
+
+            <!-- Textbox for "Other" Reason -->
+            <div id="otherReasonContainer" style="display: none; margin-top: 10px;">
+                <textarea name="other_reason" id="other_reason" placeholder="Please specify..."></textarea>
+            </div>
+
+            <button type="submit">Submit</button>
+            <button type="button" onclick="closeModal()">Close</button>
+        </form>
+    </div>
+
     </section>
 
     <style>
@@ -211,5 +241,25 @@
         function closeModal() {
             document.getElementById('cancelModal').style.display = 'none';
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+        const radioOptions = document.getElementsByName('cancel_reason');
+        const otherReasonContainer = document.getElementById('otherReasonContainer');
+        const otherReasonInput = document.getElementById('other_reason');
+
+        // Add event listeners to radio buttons
+        radioOptions.forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'Other') {
+                    otherReasonContainer.style.display = 'block';
+                    otherReasonInput.setAttribute('required', 'true'); // Make textbox required
+                } else {
+                    otherReasonContainer.style.display = 'none';
+                    otherReasonInput.removeAttribute('required'); // Remove required from textbox
+                }
+            });
+        });
+    });
+
     </script>
 @endsection

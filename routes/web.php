@@ -55,7 +55,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', [UserDashboardController::class, 'showDashboard'])->name('user.dashboard');
-    Route::get('/user/dashboard/logs', [UserController::class, 'showLogs'])->name('user.logs');
+    // Route::get('/user/dashboard/logs', [UserController::class, 'showLogs'])->name('user.logs');
+
 });
 
 // Public Order Tracking
