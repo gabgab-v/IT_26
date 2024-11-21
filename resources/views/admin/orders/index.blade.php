@@ -37,6 +37,8 @@
                     <th>Customer</th>
                     <th>Total Price</th>
                     <th>Status</th>
+                    <th>WareHouse</th>
+                    <th>Current Location</th>
                     <th>Driver</th>
                     <th>Actions</th>
                 </tr>
@@ -48,6 +50,8 @@
                     <td>{{ $order->customer ? $order->customer->name : 'No customer' }}</td>
                     <td>{{ $order->total_price }}</td>
                     <td>{{ $order->status }}</td>
+                    <td>{{ $order->warehouse ? $order->warehouse->name : 'No warehouse assigned' }}</td>
+                    <td>{{ $order->current_location }}</td>
                     <td>
                         <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
                     </td>

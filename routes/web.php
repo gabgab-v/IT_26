@@ -8,7 +8,7 @@ use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Driver\DriverAuthController;
 use App\Http\Controllers\Driver\DriverDashboardController;
-
+use App\Http\Controllers\Admin\WarehouseController;
 
 Route::get('/', function () {
     return view('home');
@@ -31,7 +31,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
         Route::resource('orders', OrderController::class); // Admin access for CRUD operations
         
-        
+        Route::resource('warehouses', WarehouseController::class);
+        Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
+
 
         // Assign Driver routes
         Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])
@@ -44,8 +46,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::patch('orders/{order}/cancel', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
-
-
     });
 });
 
@@ -77,5 +77,9 @@ Route::prefix('driver')->name('driver.')->group(function () {
         Route::post('/logout', [DriverAuthController::class, 'logout'])->name('logout');
     });
 });
+
+// Warehouse
+Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
+
 
 require __DIR__.'/auth.php';

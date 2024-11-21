@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\OrderLog;
 use App\Models\Driver;
+use App\Models\Warehouse;
+
+
 
 
 class OrderController extends Controller
@@ -15,11 +18,14 @@ class OrderController extends Controller
     // Display a listing of orders
     public function index()
     {
-        $orders = Order::with('customer')->where('is_archived', false)->get(); // Exclude archived orders
+        // Eager-load 'customer' and 'warehouse' relationships
+        $orders = Order::with(['customer', 'warehouse'])->where('is_archived', false)->get(); 
         $drivers = Driver::all();
+        
     
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
+    
     
     
 
@@ -27,7 +33,8 @@ class OrderController extends Controller
     public function create()
     {
         $customers = Customer::all();  // Retrieve all customers
-        return view('admin.orders.create', compact('customers')); // Updated path
+        $warehouses = Warehouse::all();
+        return view('admin.orders.create', compact('customers', 'warehouses')); // Updated path
     }
 
     // Store a newly created order in the database
@@ -37,6 +44,8 @@ class OrderController extends Controller
             'customer_id' => 'required',
             'total_price' => 'required|numeric',
             'status' => 'required',
+            'warehouse_id' => 'required|exists:warehouses,id',
+            'current_location' => 'nullable|string',
         ]);
     
         // Create the order using the validated data (order_number will be generated)
@@ -228,5 +237,15 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')->with('success', 'Order archived successfully.');
     }
      
+    public function updateLocation(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'current_location' => 'required|string',
+        ]);
+
+        $order->update($validated);
+
+        return redirect()->route('admin.orders.index')->with('success', 'Location updated successfully.');
+    }
 
 }

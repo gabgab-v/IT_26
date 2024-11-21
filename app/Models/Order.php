@@ -9,7 +9,8 @@ class Order extends Model
 {
     protected $fillable = [
         'customer_id', 'total_price', 'status', 'order_number', 'cancel_reason',
-        'is_archived',
+        'is_archived', 'warehouse_id',
+        'current_location',
     ];
 
     public static function boot()
@@ -36,5 +37,10 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class); // Adjust the class name and namespace as needed
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 }

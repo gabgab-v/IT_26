@@ -27,6 +27,21 @@
                 <input type="text" name="status" value="Pending" required style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
             </div>
 
+            <div style="margin-bottom: 15px;">
+                <label for="warehouse_id" style="display: block; font-size: 1.1em; color: #091057;">Warehouse:</label>
+                <select name="warehouse_id" id="warehouse_id" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
+                    @foreach ($warehouses as $warehouse)
+                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="current_location" style="display: block; font-size: 1.1em; color: #091057;">Current Location:</label>
+                <input type="text" name="current_location" id="current_location" placeholder="Enter current location" style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
+            </div>
+
+
             <button type="submit" style="background-color: #024CAA; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; width: 100%; transition: background-color 0.3s ease;">
                 Create Order
             </button>
