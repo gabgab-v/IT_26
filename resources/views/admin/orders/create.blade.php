@@ -37,8 +37,8 @@
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label for="current_location" style="display: block; font-size: 1.1em; color: #091057;">Current Location:</label>
-                <input type="text" name="current_location" id="current_location" placeholder="Enter current location" style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
+                <label for="parcel_location" style="display: block; font-size: 1.1em; color: #091057;">Parcel Location:</label>
+                <input type="text" name="parcel_location" id="parcel_location" placeholder="Enter current location" style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
             </div>
 
 

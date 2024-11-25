@@ -45,7 +45,7 @@ class OrderController extends Controller
             'total_price' => 'required|numeric',
             'status' => 'required',
             'warehouse_id' => 'required|exists:warehouses,id',
-            'current_location' => 'nullable|string',
+            'parcel_location' => 'nullable|string',
         ]);
     
         // Create the order using the validated data (order_number will be generated)
