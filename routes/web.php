@@ -49,7 +49,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-
+Route::post('/orders/{order}/update-location', [OrderController::class, 'updateParcelLocation'])->name('orders.updateLocation');
 
 // General authenticated user routes
 Route::middleware(['auth'])->group(function () {
@@ -74,6 +74,7 @@ Route::prefix('driver')->name('driver.')->group(function () {
     // Only accessible if authenticated as a driver
     Route::middleware('auth:driver')->group(function () {
         Route::get('/dashboard', [DriverDashboardController::class, 'index'])->name('dashboard');
+        Route::patch('/orders/{order}/location', [DriverDashboardController::class, 'updateLocation'])->name('orders.update_location');
         Route::post('/logout', [DriverAuthController::class, 'logout'])->name('logout');
     });
 });

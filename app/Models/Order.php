@@ -8,10 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'customer_id', 'total_price', 'status', 'order_number', 'cancel_reason',
-        'is_archived', 'warehouse_id',
-        'current_location',
+        'customer_id', 
+        'total_price', 
+        'status', 
+        'order_number', 
+        'cancel_reason',
+        'is_archived', 
+        'warehouse_id',
+        'current_location', // Represents the warehouse location
+        'parcel_location',  // Represents the parcel's current location
     ];
+    
 
     public static function boot()
     {
@@ -43,4 +50,10 @@ class Order extends Model
     {
         return $this->belongsTo(Warehouse::class);
     }
+
+    public function parcelLocations()
+    {
+        return $this->hasMany(ParcelLocation::class);
+    }
+
 }

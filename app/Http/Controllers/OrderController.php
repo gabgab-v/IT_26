@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\OrderLog;
 use App\Models\Driver;
 use App\Models\Warehouse;
-
+use App\Models\ParcelLocation;
 
 
 
@@ -246,6 +246,13 @@ class OrderController extends Controller
         $order->update($validated);
 
         return redirect()->route('admin.orders.index')->with('success', 'Location updated successfully.');
+    }
+
+    public function updateParcelLocation(Request $request, Order $order)
+    {
+        $orders = Order::with('parcelLocations')->get();
+        return view('admin.orders.index', compact('orders'));
+        
     }
 
 }

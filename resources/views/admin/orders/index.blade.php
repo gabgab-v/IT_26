@@ -15,6 +15,7 @@
             <a href="#">About Us</a>
             <a href="#">Services</a>
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
+            <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
 
         </nav>
     </header>
@@ -31,19 +32,20 @@
         <a href="{{ route('admin.orders.create') }}" class="search-btn">Create New Order</a>
 
         <table class="order-table">
-            <thead>
-                <tr>
-                    <th>Order Number</th>
-                    <th>Customer</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
-                    <th>WareHouse</th>
-                    <th>Current Location</th>
-                    <th>Driver</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Customer</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>WareHouse</th>
+                <th>Current Location</th>
+                <th>Parcel Locations</th>
+                <th>Driver</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
             @foreach ($orders as $order)
                 <tr>
                     <td>{{ $order->order_number }}</td>
@@ -52,6 +54,7 @@
                     <td>{{ $order->status }}</td>
                     <td>{{ $order->warehouse ? $order->warehouse->name : 'No warehouse assigned' }}</td>
                     <td>{{ $order->current_location }}</td>
+                    <td>{{ $order->parcel_location }}</td>
                     <td>
                         <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
                     </td>
@@ -61,16 +64,14 @@
                         <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('PATCH')
-                            <input type="hidden" name="cancel_reason" value="Customer canceled the order"> <!-- Optional default reason -->
+                            <input type="hidden" name="cancel_reason" value="Customer canceled the order">
                             <button type="button" onclick="showCancelModal({{ $order->id }})">Cancel</button>
                         </form>
-
                     </td>
                 </tr>
             @endforeach
+        </tbody>
 
-
-            </tbody>
         </table>
 
         <!-- Modal for Cancel Reason -->
