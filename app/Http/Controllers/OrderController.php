@@ -10,18 +10,38 @@ use App\Models\OrderLog;
 use App\Models\Driver;
 use App\Models\Warehouse;
 use App\Models\ParcelLocation;
+use Carbon\Carbon;
 
 
 
 class OrderController extends Controller
 {
     // Display a listing of orders
-    public function index()
+    public function index(Request $request)
     {
-        // Eager-load 'customer' and 'warehouse' relationships
-        $orders = Order::with(['customer', 'warehouse'])->where('is_archived', false)->get(); 
+        $query = Order::with(['customer', 'warehouse'])->where('is_archived', false);
+    
+        // Filter by delivery status
+        if ($request->filled('is_delivered')) {
+            $query->where('is_delivered', $request->boolean('is_delivered'));
+        }
+    
+        // Filter by date range
+        if ($request->filled('date_ordered_from') && $request->filled('date_ordered_to')) {
+            try {
+                $query->whereBetween('date_ordered', [
+                    Carbon::parse($request->date_ordered_from)->startOfDay(),
+                    Carbon::parse($request->date_ordered_to)->endOfDay(),
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Invalid date range filter: ', $e->getMessage());
+            }
+        }
+    
+        // Retrieve filtered orders
+        $orders = $query->get();
+    
         $drivers = Driver::all();
-        
     
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
@@ -254,5 +274,18 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('orders'));
         
     }
+    
+    public function delivered()
+    {
+        // Fetch only delivered orders with related customer, warehouse, and driver data
+        $orders = Order::with(['customer', 'warehouse', 'driver'])
+            ->where('is_delivered', true)
+            ->get();
+    
+        // Return the view with the delivered orders
+        return view('admin.orders.delivered', compact('orders'));
+    }
+    
+
 
 }

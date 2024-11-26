@@ -16,6 +16,7 @@
             <a href="#">Services</a>
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
+            <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
 
         </nav>
     </header>
@@ -28,51 +29,69 @@
                 {{ __('Log Out') }}
             </button>
         </form>
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="filter-form">
+            <label for="is_delivered">Delivery Status:</label>
+            <select name="is_delivered" id="is_delivered">
+                <option value="">All</option>
+                <option value="1" {{ request('is_delivered') == '1' ? 'selected' : '' }}>Delivered</option>
+                <option value="0" {{ request('is_delivered') == '0' ? 'selected' : '' }}>Pending</option>
+            </select>
+
+            <label for="date_ordered_from">Date From:</label>
+            <input type="date" name="date_ordered_from" id="date_ordered_from" value="{{ request('date_ordered_from') }}">
+
+            <label for="date_ordered_to">Date To:</label>
+            <input type="date" name="date_ordered_to" id="date_ordered_to" value="{{ request('date_ordered_to') }}">
+
+            <button type="submit" class="search-btn">Filter</button>
+        </form>
+
 
         <a href="{{ route('admin.orders.create') }}" class="search-btn">Create New Order</a>
 
         <table class="order-table">
-        <thead>
-            <tr>
-                <th>Order Number</th>
-                <th>Customer</th>
-                <th>Total Price</th>
-                <th>Status</th>
-                <th>WareHouse</th>
-                <th>Current Location</th>
-                <th>Parcel Locations</th>
-                <th>Driver</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($orders as $order)
+            <thead>
                 <tr>
-                    <td>{{ $order->order_number }}</td>
-                    <td>{{ $order->customer ? $order->customer->name : 'No customer' }}</td>
-                    <td>{{ $order->total_price }}</td>
-                    <td>{{ $order->status }}</td>
-                    <td>{{ $order->warehouse ? $order->warehouse->name : 'No warehouse assigned' }}</td>
-                    <td>{{ $order->current_location }}</td>
-                    <td>{{ $order->parcel_location }}</td>
-                    <td>
-                        <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
-                    </td>
-                    <td>
-                        <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
-                        <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
-                        <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('PATCH')
-                            <input type="hidden" name="cancel_reason" value="Customer canceled the order">
-                            <button type="button" onclick="showCancelModal({{ $order->id }})">Cancel</button>
-                        </form>
-                    </td>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Duration</th> <!-- New Column -->
+                    <th>WareHouse</th>
+                    <th>Parcel Locations</th>
+                    <th>Driver</th>
+                    <th>Actions</th>
                 </tr>
-            @endforeach
-        </tbody>
+            </thead>
+            <tbody>
+            @foreach ($orders as $order)
+            <tr>
+                <td>{{ $order->order_number }}</td>
+                <td>{{ optional($order->customer)->name ?? 'No customer' }}</td>
+                <td>{{ $order->total_price }}</td>
+                <td>{{ $order->is_delivered ? 'Delivered' : 'Pending' }}</td>
+                <td>{{ $order->duration ?? 'N/A' }}</td>
+                <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
+                <td>{{ $order->parcel_location ?? 'No parcel location' }}</td>
+                <td>
+                    <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
+                </td>
+                <td>
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
+                    <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
+                    <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="cancel_reason" value="Customer canceled the order">
+                        <button type="button" onclick="showCancelModal({{ $order->id }})">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+        @endforeach
 
+            </tbody>
         </table>
+
 
         <!-- Modal for Cancel Reason -->
     <div id="cancelModal" style="display:none;">

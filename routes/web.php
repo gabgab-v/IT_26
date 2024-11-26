@@ -29,10 +29,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Dashboard, Order, and Profile routes restricted to admin
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
+        Route::get('orders/delivered', [OrderController::class, 'delivered'])->name('orders.delivered');
         Route::resource('orders', OrderController::class); // Admin access for CRUD operations
         
         Route::resource('warehouses', WarehouseController::class);
         Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
+
+
 
 
         // Assign Driver routes

@@ -12,12 +12,18 @@ class Order extends Model
         'total_price', 
         'status', 
         'order_number', 
-        'cancel_reason',
+        'cancel_reason', 
         'is_archived', 
-        'warehouse_id',
-        'current_location', // Represents the warehouse location
-        'parcel_location',  // Represents the parcel's current location
+        'warehouse_id', 
+        'current_location', // for the location of warehouse
+        'parcel_location', //for parcel
+        'date_ordered', 
+        'estimated_date_of_arrival', 
+        'duration_of_order', 
+        'weight', 
+        'is_delivered'
     ];
+    
     
 
     public static function boot()
@@ -27,6 +33,7 @@ class Order extends Model
         // Automatically generate the order number when an order is created
         static::creating(function ($order) {
             $order->order_number = self::generateOrderNumber();
+            $order->date_ordered = now(); // Automatically set the date ordered when created
         });
     }
 
@@ -55,5 +62,19 @@ class Order extends Model
     {
         return $this->hasMany(ParcelLocation::class);
     }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
+    }
+
+    public function getDurationOfOrderAttribute()
+    {
+        if ($this->date_ordered && $this->is_delivered) {
+            return now()->diffInDays($this->date_ordered);
+        }
+        return null; // Or calculate based on other criteria if needed
+    }
+
 
 }
