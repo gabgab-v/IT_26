@@ -34,9 +34,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         Route::resource('warehouses', WarehouseController::class);
         Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
-        Route::patch('orders/{order}/mark-delivered', [OrderController::class, 'markAsDelivered'])->name('admin.orders.mark_delivered');
 
-        Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
+
 
 
         // Assign Driver routes
@@ -80,10 +79,6 @@ Route::prefix('driver')->name('driver.')->group(function () {
         Route::get('/dashboard', [DriverDashboardController::class, 'index'])->name('dashboard');
         Route::patch('/orders/{order}/location', [DriverDashboardController::class, 'updateLocation'])->name('orders.update_location');
         Route::post('/logout', [DriverAuthController::class, 'logout'])->name('logout');
-
-        // Driver order update routes
-        Route::patch('orders/{order}/update', [DriverDashboardController::class, 'updateOrder'])->name('driver.orders.update');
-        Route::patch('orders/{order}/update_status', [DriverDashboardController::class, 'updateOrderStatus'])->name('driver.orders.update_status');
     });
 });
 
