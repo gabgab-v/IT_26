@@ -20,10 +20,11 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::with(['customer', 'warehouse'])->where('is_archived', false);
-    
-        // Filter by delivery status
-        if ($request->filled('is_delivered')) {
-            $query->where('is_delivered', $request->boolean('is_delivered'));
+        
+        // Filter by delivery status (1 for Delivered, 0 for Pending)
+        if ($request->has('is_delivered') && $request->is_delivered !== '') {
+            $isDelivered = $request->input('is_delivered');
+            $query->where('is_delivered', $isDelivered);
         }
     
         // Filter by date range
@@ -37,12 +38,13 @@ class OrderController extends Controller
                 \Log::error('Invalid date range filter: ', $e->getMessage());
             }
         }
-    
+        
         // Retrieve filtered orders
         $orders = $query->get();
-    
+        
+        // Get all drivers (no changes needed here)
         $drivers = Driver::all();
-    
+        
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
     
@@ -286,6 +288,26 @@ class OrderController extends Controller
         return view('admin.orders.delivered', compact('orders'));
     }
     
+    public function markAsDelivered(Order $order)
+    {
+        // Update the order status to 'delivered'
+        $order->is_delivered = true;
+        $order->save();
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order marked as delivered.');
+    }
+
+
+    public function confirmDelivery(Order $order)
+    {
+        // Ensure the order is marked as delivered and the driver has completed the delivery
+        if ($order->is_delivered && !$order->is_fully_delivered) {
+            $order->is_fully_delivered = true;
+            $order->save();
+        }
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order fully delivered and removed from driver view.');
+    }
 
 
 }

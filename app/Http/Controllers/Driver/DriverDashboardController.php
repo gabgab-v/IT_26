@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Driver;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
-use App\Models\Order; // Import the Order model
 
 class DriverDashboardController extends Controller
 {
@@ -13,11 +13,14 @@ class DriverDashboardController extends Controller
      */
     public function index()
     {
-        // Get orders assigned to the authenticated driver
-        $orders = Order::where('driver_id', auth()->id())->get();
+        // Get orders assigned to the authenticated driver that are not fully delivered
+        $orders = Order::where('driver_id', auth()->id())
+                       ->where('is_fully_delivered', false)
+                       ->get();
         return view('driver.dashboard', compact('orders'));
     }
     
+
     /**
      * Update the parcel location for an order.
      */
@@ -39,4 +42,27 @@ class DriverDashboardController extends Controller
 
         return redirect()->route('driver.dashboard')->with('success', 'Parcel location updated successfully');
     }
+
+    /**
+     * Update the order status for a driver.
+     */
+    public function updateOrderStatus(Request $request, Order $order)
+    {
+        // Ensure the driver owns the order and that the order is not fully delivered
+        if ($order->driver_id !== auth()->id() || $order->is_fully_delivered) {
+            return redirect()->back()->with('error', 'Unauthorized action or order already fully delivered');
+        }
+    
+        // Validate the input for status
+        $request->validate([
+            'status' => 'required|string|in:pending,delivered',
+        ]);
+    
+        // Update the order status
+        $order->status = $request->input('status');
+        $order->save();
+    
+        return redirect()->route('driver.dashboard')->with('success', 'Order status updated successfully');
+    }
+    
 }

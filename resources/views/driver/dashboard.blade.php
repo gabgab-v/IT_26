@@ -107,8 +107,17 @@
                             @csrf
                             @method('PATCH')
                             <input type="text" name="parcel_location" placeholder="Enter parcel location" value="{{ $order->parcel_location }}">
-                            <button type="submit">Update</button>
+                            <button type="submit">Update Parcel Location</button>
                         </form>
+
+                        <!-- Form to update order status -->
+                        <form action="{{ route('driver.driver.orders.update_status', $order->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="delivered">
+                            <button type="submit">Mark as Delivered</button>
+                        </form>
+
                     </td>
                 </tr>
             @empty

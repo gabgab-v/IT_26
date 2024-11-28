@@ -56,41 +56,61 @@
                     <th>Customer</th>
                     <th>Total Price</th>
                     <th>Status</th>
-                    <th>Duration</th> <!-- New Column -->
-                    <th>WareHouse</th>
+                    <th>Duration</th>
+                    <th>Warehouse</th>
                     <th>Parcel Locations</th>
                     <th>Driver</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-            @foreach ($orders as $order)
-            <tr>
-                <td>{{ $order->order_number }}</td>
-                <td>{{ optional($order->customer)->name ?? 'No customer' }}</td>
-                <td>{{ $order->total_price }}</td>
-                <td>{{ $order->is_delivered ? 'Delivered' : 'Pending' }}</td>
-                <td>{{ $order->duration ?? 'N/A' }}</td>
-                <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
-                <td>{{ $order->parcel_location ?? 'No parcel location' }}</td>
-                <td>
-                    <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
-                </td>
-                <td>
-                    <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
-                    <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
-                    <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="cancel_reason" value="Customer canceled the order">
-                        <button type="button" onclick="showCancelModal({{ $order->id }})">Cancel</button>
-                    </form>
-                </td>
-            </tr>
-        @endforeach
+                @foreach ($orders as $order)
+                <tr>
+                    <td>{{ $order->order_number }}</td>
+                    <td>{{ optional($order->customer)->name ?? 'No customer' }}</td>
+                    <td>{{ $order->total_price }}</td>
+                    <td>{{ $order->is_delivered ? 'Delivered' : 'Pending' }}</td>
+                    <td>{{ $order->duration ?? 'N/A' }}</td>
+                    <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
+                    <td>{{ $order->parcel_location ?? 'No parcel location' }}</td>
+                    <td>
+                        <a href="{{ route('admin.orders.assign_driver_page', $order->id) }}" class="search-btn">Assign Driver</a>
+                    </td>
+                    <td>
+                        <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
+                        <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
 
+                        <!-- Mark as Delivered Button -->
+                        @if (!$order->is_delivered)
+                            <form action="{{ route('admin.admin.orders.mark_delivered', $order->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="search-btn">Mark as Delivered</button>
+                            </form>
+                        @endif
+
+                        <!-- Confirm Delivery Button -->
+                        @if ($order->is_delivered && !$order->is_fully_delivered)
+                            <form action="{{ route('admin.orders.confirm_delivery', $order->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="search-btn">Confirm Delivery</button>
+                            </form>
+                        @endif
+
+
+                        <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="cancel_reason" value="Customer canceled the order">
+                            <button type="button" onclick="showCancelModal({{ $order->id }})">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
             </tbody>
         </table>
+
 
 
         <!-- Modal for Cancel Reason -->
