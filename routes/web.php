@@ -83,7 +83,7 @@ Route::prefix('driver')->name('driver.')->group(function () {
 
         // Driver order update routes
         Route::patch('orders/{order}/update', [DriverDashboardController::class, 'updateOrder'])->name('driver.orders.update');
-        Route::patch('orders/{order}/update_status', [DriverDashboardController::class, 'updateOrderStatus'])->name('driver.orders.update_status');
+        Route::patch('orders/{order}/update-status', [DriverDashboardController::class, 'updateStatus'])->name('driver.orders.update_status');
     });
 });
 

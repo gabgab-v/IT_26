@@ -23,6 +23,7 @@ class Order extends Model
         'weight', 
         'is_delivered',
         'duration_of_order',
+        'delivered_at',
     ];
     
     
