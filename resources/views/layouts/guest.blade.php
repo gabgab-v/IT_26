@@ -8,158 +8,158 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <style>
-            body {
-                background-color: #DBD3D3;
-                background-image: url('{{ asset('images/BG.jpg') }}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                font-family: 'Figtree', sans-serif;
-                margin: 0;
-                color: #091057;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                animation: backgroundFade 3s ease-in-out infinite alternate;
-            }
+        body {
+            background-color: #DBD3D3;
+            background-image: url('{{ asset('images/BG.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'Figtree', sans-serif;
+            margin: 0;
+            color: #091057;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: backgroundFade 3s ease-in-out infinite alternate;
+        }
 
-            @keyframes backgroundFade {
-                0% { filter: brightness(1); }
-                100% { filter: brightness(0.9); }
-            }
+        @keyframes backgroundFade {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(0.9); }
+        }
 
-            .login-container {
-                width: 100%;
-                max-width: 400px;
-                background: rgba(255, 255, 255, 0.85);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-                border-radius: 12px;
-                padding: 2rem;
-                animation: slideIn 0.8s ease-out;
-            }
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            animation: slideIn 0.8s ease-out;
+        }
 
-            @keyframes slideIn {
-                from {
-                    transform: translateY(-30px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
             }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
-            .form-header {
-                text-align: center;
-                margin-bottom: 1.5rem;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
+        .form-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-            .form-header h1 {
-                font-size: 1.8rem;
-                font-weight: 600;
-                color: #091057;
-                animation: fadeInText 1.2s ease-in-out;
-            }
+        .form-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #091057;
+            animation: fadeInText 1.2s ease-in-out;
+        }
 
-            @keyframes fadeInText {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
+        @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            .center-logo {
-                max-width: 150px;
-                width: 100%;
-                height: auto;
-                margin-bottom: 1rem;
-                animation: rotateIn 1.5s ease;
-            }
+        .center-logo {
+            max-width: 150px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 1rem;
+            animation: rotateIn 1.5s ease;
+        }
 
-            @keyframes rotateIn {
-                from { transform: rotate(-180deg); opacity: 0; }
-                to { transform: rotate(0); opacity: 1; }
-            }
+        @keyframes rotateIn {
+            from { transform: rotate(-180deg); opacity: 0; }
+            to { transform: rotate(0); opacity: 1; }
+        }
 
-            .input-field-container {
-                position: relative;
-                width: 100%;
-            }
+        .input-field-container {
+            position: relative;
+            width: 100%;
+        }
 
-            .input-field {
-                width: 100%;
-                padding: 0.9rem;
-                padding-right: 3rem;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-                background: #ffffff;
-                color: black;
-                transition: border-color 0.3s, box-shadow 0.3s;
-            }
+        .input-field {
+            width: 100%;
+            padding: 0.9rem;
+            padding-right: 0.2px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            background: #ffffff;
+            color: black;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
 
-            .input-field:focus {
-                border-color: #3f51b5;
-                box-shadow: 0 0 8px rgba(63, 81, 181, 0.5);
-                outline: none;
-            }
+        .input-field:focus {
+            border-color: #3f51b5;
+            box-shadow: 0 0 8px rgba(63, 81, 181, 0.5);
+            outline: none;
+        }
 
-            .password-toggle {
-                position: absolute;
-                top: 50%;
-                right: 1rem;
-                transform: translateY(-50%);
-                cursor: pointer;
-                font-size: 1.4rem;
-                color: #555;
-                transition: color 0.3s;
-            }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: #555;
+            transition: color 0.3s;
+        }
 
-            .password-toggle:hover {
-                color: #3f51b5;
-            }
+        .password-toggle:hover {
+            color: #3f51b5;
+        }
 
-            .login-button {
-                width: 100%;
-                padding: 0.9rem;
-                background-color: #091057;
-                color: white;
-                font-size: 1.1rem;
-                font-weight: 600;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background 0.3s, transform 0.2s;
-                animation: buttonPulse 1.5s ease-in-out infinite;
-            }
+        .login-button {
+            width: 100%;
+            padding: 0.9rem;
+            background-color: #091057;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            animation: buttonPulse 1.5s ease-in-out infinite;
+        }
 
-            @keyframes buttonPulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
+        @keyframes buttonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-            .login-button:hover {
-                background-color: #EC8305;
-                transform: translateY(-3px);
-            }
+        .login-button:hover {
+            background-color: #EC8305;
+            transform: translateY(-3px);
+        }
 
-            .forgot-password-link {
-                display: block;
-                text-align: center;
-                margin-top: 1rem;
-                font-size: 0.85rem;
-                color: #091057;
-                text-decoration: none;
-                transition: color 0.3s;
-            }
+        .forgot-password-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #091057;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
 
-            .forgot-password-link:hover {
-                color: #EC8305;
-            }
-        </style>
+        .forgot-password-link:hover {
+            color: #EC8305;
+        }
+    </style>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
