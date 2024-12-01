@@ -26,9 +26,7 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <div>
                 <a href="/">
-                    <div class="profile-icon">
-                        <img src="{{ asset('images/jgab_logo3.png') }}" alt="Profile" style="width: 220px; height: auto;">
-                    </div>
+                    
                 </a>
             </div>
 
