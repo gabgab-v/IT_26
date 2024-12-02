@@ -102,13 +102,30 @@
                     <td>{{ $order->status }}</td>
                     <td>{{ $order->parcel_location ?? 'Not updated' }}</td>
                     <td class="actions">
-                        <!-- Form to update parcel location -->
+                    <!-- Form to update parcel location -->
                         <form action="{{ route('driver.orders.update_location', $order->id) }}" method="POST" class="update-form">
                             @csrf
                             @method('PATCH')
                             <input type="text" name="parcel_location" placeholder="Enter parcel location" value="{{ $order->parcel_location }}">
                             <button type="submit">Update</button>
                         </form>
+
+                        <!-- Form to update order status -->
+                        <form action="{{ route('driver.driver.orders.update_status', $order->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="in_transit" {{ $order->status == 'in_transit' ? 'selected' : '' }}>In Transit</option>
+                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                            </select>
+                            <noscript>
+                                <button type="submit">Update Status</button>
+                            </noscript>
+                        </form>
+                    </td>
+
+
                     </td>
                 </tr>
             @empty

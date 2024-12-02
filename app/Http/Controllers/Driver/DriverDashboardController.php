@@ -39,4 +39,33 @@ class DriverDashboardController extends Controller
 
         return redirect()->route('driver.dashboard')->with('success', 'Parcel location updated successfully');
     }
+
+    /**
+     * Update the order status for a driver.
+     */
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,in_transit,delivered',
+        ]);
+    
+        // Update the status
+        $order->status = $validated['status'];
+    
+        // Update is_delivered and set delivered_at timestamp
+        if ($validated['status'] === 'delivered') {
+            $order->is_delivered = 1;
+            $order->delivered_at = now(); // Set the current timestamp
+        } else {
+            $order->is_delivered = 0;
+            $order->delivered_at = null; // Clear the timestamp if status is not 'delivered'
+        }
+    
+        // Save the order changes
+        $order->save();
+    
+        return redirect()->back()->with('success', 'Order status updated successfully.');
+    }
+    
+    
 }

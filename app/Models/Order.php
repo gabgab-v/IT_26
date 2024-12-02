@@ -21,8 +21,17 @@ class Order extends Model
         'estimated_date_of_arrival', 
         'duration_of_order', 
         'weight', 
-        'is_delivered'
+        'is_delivered',
+        'duration_of_order',
+        'delivered_at',
     ];
+
+    protected $casts = [
+        'date_ordered' => 'datetime',
+        'delivered_at' => 'datetime',
+        'estimated_date_of_arrival' => 'datetime',
+    ];
+    
     
     
 
@@ -74,6 +83,15 @@ class Order extends Model
             return now()->diffInDays($this->date_ordered);
         }
         return null; // Or calculate based on other criteria if needed
+    }
+
+    // If you want to calculate it dynamically in PHP instead of relying on the trigger:
+    public function getDurationAttribute()
+    {
+        if ($this->is_fully_delivered && $this->created_at) {
+            return $this->created_at->diffInMinutes(now());
+        }
+        return null;
     }
 
 

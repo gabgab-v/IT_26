@@ -79,6 +79,10 @@ Route::prefix('driver')->name('driver.')->group(function () {
         Route::get('/dashboard', [DriverDashboardController::class, 'index'])->name('dashboard');
         Route::patch('/orders/{order}/location', [DriverDashboardController::class, 'updateLocation'])->name('orders.update_location');
         Route::post('/logout', [DriverAuthController::class, 'logout'])->name('logout');
+
+        // Driver order update routes
+        Route::patch('orders/{order}/update', [DriverDashboardController::class, 'updateOrder'])->name('driver.orders.update');
+        Route::patch('orders/{order}/update-status', [DriverDashboardController::class, 'updateStatus'])->name('driver.orders.update_status');
     });
 });
 
