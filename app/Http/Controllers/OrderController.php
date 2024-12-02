@@ -19,32 +19,47 @@ class OrderController extends Controller
     // Display a listing of orders
     public function index(Request $request)
     {
+        // Validate the input
+        $request->validate([
+            'date_ordered_from' => 'nullable|date|before_or_equal:date_ordered_to',
+            'date_ordered_to' => 'nullable|date|after_or_equal:date_ordered_from',
+        ]);
+    
         $query = Order::with(['customer', 'warehouse'])->where('is_archived', false);
-        
-        // Filter by delivery status (1 for Delivered, 0 for Pending)
+    
+        // Filter by delivery status
         if ($request->has('is_delivered') && $request->is_delivered !== '') {
-            $isDelivered = $request->input('is_delivered');
-            $query->where('is_delivered', $isDelivered);
+            $query->where('is_delivered', $request->is_delivered);
         }
     
         // Filter by date range
+        // Filter by date range
         if ($request->filled('date_ordered_from') && $request->filled('date_ordered_to')) {
-            try {
-                $query->whereBetween('date_ordered', [
-                    Carbon::parse($request->date_ordered_from)->startOfDay(),
-                    Carbon::parse($request->date_ordered_to)->endOfDay(),
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Invalid date range filter: ', $e->getMessage());
-            }
+            $dateOrderedFrom = Carbon::parse($request->input('date_ordered_from'))->startOfDay();
+            $dateOrderedTo = Carbon::parse($request->input('date_ordered_to'))->endOfDay();
+
+            // Apply the filter
+            $query->where(function ($q) use ($dateOrderedFrom, $dateOrderedTo) {
+                $q->whereBetween('date_ordered', [$dateOrderedFrom, $dateOrderedTo])
+                ->orWhereBetween('delivered_at', [$dateOrderedFrom, $dateOrderedTo]);
+            });
+        } else {
+            \Log::info('Date range not applied: Missing parameters date_ordered_from or date_ordered_to.');
         }
-        
-        // Retrieve filtered orders
+
+    
+        // Log the query and bindings
+        \Log::info('SQL Query:', [$query->toSql()]);
+        \Log::info('Query Bindings:', $query->getBindings());
+    
+        // Execute and log the results
         $orders = $query->get();
-        
+        \Log::info('Query Results:', $orders->toArray());
+
+    
         // Get all drivers (no changes needed here)
         $drivers = Driver::all();
-        
+    
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
     
@@ -288,26 +303,6 @@ class OrderController extends Controller
         return view('admin.orders.delivered', compact('orders'));
     }
     
-    public function markAsDelivered(Order $order)
-    {
-        // Update the order status to 'delivered'
-        $order->is_delivered = true;
-        $order->save();
-
-        return redirect()->route('admin.orders.index')->with('success', 'Order marked as delivered.');
-    }
-
-
-    public function confirmDelivery(Order $order)
-    {
-        // Ensure the order is marked as delivered and the driver has completed the delivery
-        if ($order->is_delivered && !$order->is_fully_delivered) {
-            $order->is_fully_delivered = true;
-            $order->save();
-        }
-
-        return redirect()->route('admin.orders.index')->with('success', 'Order fully delivered and removed from driver view.');
-    }
 
 
 }

@@ -34,9 +34,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         Route::resource('warehouses', WarehouseController::class);
         Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
-        Route::patch('orders/{order}/mark-delivered', [OrderController::class, 'markAsDelivered'])->name('admin.orders.mark_delivered');
 
-        Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
+
 
 
         // Assign Driver routes

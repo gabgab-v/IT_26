@@ -25,6 +25,13 @@ class Order extends Model
         'duration_of_order',
         'delivered_at',
     ];
+
+    protected $casts = [
+        'date_ordered' => 'datetime',
+        'delivered_at' => 'datetime',
+        'estimated_date_of_arrival' => 'datetime',
+    ];
+    
     
     
 

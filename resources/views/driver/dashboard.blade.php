@@ -107,7 +107,7 @@
                             @csrf
                             @method('PATCH')
                             <input type="text" name="parcel_location" placeholder="Enter parcel location" value="{{ $order->parcel_location }}">
-                            <button type="submit">Update Parcel Location</button>
+                            <button type="submit">Update</button>
                         </form>
 
                         <!-- Form to update order status -->

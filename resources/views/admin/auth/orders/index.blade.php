@@ -17,7 +17,6 @@
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
-
         </nav>
     </header>
 
@@ -29,14 +28,8 @@
                 {{ __('Log Out') }}
             </button>
         </form>
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="filter-form">
-            <label for="is_delivered">Delivery Status:</label>
-            <select name="is_delivered" id="is_delivered">
-                <option value="">All</option>
-                <option value="1" {{ request('is_delivered') == '1' ? 'selected' : '' }}>Delivered</option>
-                <option value="0" {{ request('is_delivered') == '0' ? 'selected' : '' }}>Pending</option>
-            </select>
 
+        <form method="GET" action="{{ route('admin.orders.index') }}">
             <label for="date_ordered_from">Date From:</label>
             <input type="date" name="date_ordered_from" id="date_ordered_from" value="{{ request('date_ordered_from') }}">
 
@@ -45,7 +38,6 @@
 
             <button type="submit" class="search-btn">Filter</button>
         </form>
-
 
         <a href="{{ route('admin.orders.create') }}" class="search-btn">Create New Order</a>
 
@@ -56,10 +48,10 @@
                     <th>Customer</th>
                     <th>Total Price</th>
                     <th>Status</th>
-                    <th>Duration</th>
-                    <th>Warehouse</th>
+                    <th>Duration</th> <!-- New Column -->
+                    <th>WareHouse</th>
                     <th>Parcel Locations</th>
-                    <th>Driver</th>
+                    <th>Fully Delivered</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -155,6 +147,8 @@
     </div>
 
     </section>
+
+
 
     <style>
         /* Add consistent styling from the main page */

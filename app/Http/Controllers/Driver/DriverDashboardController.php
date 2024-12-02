@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Driver;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Models\Order; // Import the Order model
 
 class DriverDashboardController extends Controller
 {
@@ -13,14 +13,11 @@ class DriverDashboardController extends Controller
      */
     public function index()
     {
-        // Get orders assigned to the authenticated driver that are not fully delivered
-        $orders = Order::where('driver_id', auth()->id())
-                       ->where('is_fully_delivered', false)
-                       ->get();
+        // Get orders assigned to the authenticated driver
+        $orders = Order::where('driver_id', auth()->id())->get();
         return view('driver.dashboard', compact('orders'));
     }
     
-
     /**
      * Update the parcel location for an order.
      */
