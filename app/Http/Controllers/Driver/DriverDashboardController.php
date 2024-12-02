@@ -46,23 +46,29 @@ class DriverDashboardController extends Controller
     /**
      * Update the order status for a driver.
      */
-    public function updateOrderStatus(Request $request, Order $order)
+    public function updateStatus(Request $request, Order $order)
     {
-        // Ensure the driver owns the order and that the order is not fully delivered
-        if ($order->driver_id !== auth()->id() || $order->is_fully_delivered) {
-            return redirect()->back()->with('error', 'Unauthorized action or order already fully delivered');
-        }
-    
-        // Validate the input for status
-        $request->validate([
-            'status' => 'required|string|in:pending,delivered',
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,in_transit,delivered',
         ]);
     
-        // Update the order status
-        $order->status = $request->input('status');
+        // Update the status
+        $order->status = $validated['status'];
+    
+        // Update is_delivered and set delivered_at timestamp
+        if ($validated['status'] === 'delivered') {
+            $order->is_delivered = 1;
+            $order->delivered_at = now(); // Set the current timestamp
+        } else {
+            $order->is_delivered = 0;
+            $order->delivered_at = null; // Clear the timestamp if status is not 'delivered'
+        }
+    
+        // Save the order changes
         $order->save();
     
-        return redirect()->route('driver.dashboard')->with('success', 'Order status updated successfully');
+        return redirect()->back()->with('success', 'Order status updated successfully.');
     }
+    
     
 }

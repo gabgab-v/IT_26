@@ -168,11 +168,12 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body>
-        <div class="login-container">
-            <div class="form-header">
-                <img src="{{ asset('images/jgab_logo3.png') }}" alt="JGAB Express Logo" class="center-logo">
-                <h1>Log In</h1>
+    <body class="font-sans text-gray-900 antialiased">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+            <div>
+                <a href="/">
+                    
+                </a>
             </div>
             <form method="POST" action="{{ route('login') }}">
                 @csrf

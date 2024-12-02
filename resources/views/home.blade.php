@@ -3,21 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JGAB Express</title>
+    <title>JGAB Express - Professional Logistics</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Combined Inline CSS styling */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background-color: #DBD3D3;
+            background-color: #F3F4F6;
             color: #091057;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('{{ asset('images/BG.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            filter: brightness(0.8);
         }
 
         body::before {
@@ -35,47 +53,56 @@
         }
 
         header {
-            background-color: #091057;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(145deg, #091057, #09247B);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            justify-content: space-between;
-            padding: 20px;
             align-items: center;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 10;
+            justify-content: space-between;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            margin-right: 20px;
         }
 
         .logo-circle img {
-            width: 75px;
-            height: 75px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
+        }
+
+        .logo-text {
+            margin-left: 15px;
         }
 
         .logo-text h1 {
             font-size: 1.8em;
-            margin-bottom: 5px;
             color: #ffffff;
-            margin-left: 20px;
+            font-weight: 700;
         }
 
-        .logo-text p {
-            font-size: 0.9em;
-            color: #ffffff;
-            margin-top: -5px;
-            margin-left: 20px;
+        nav {
+            display: flex;
+            align-items: center;
         }
 
         nav a {
             text-decoration: none;
             color: #ffffff;
-            margin-left: 20px;
-            font-weight: bold;
+            margin-left: 25px;
+            font-weight: 500;
             transition: color 0.3s ease;
         }
 
@@ -83,32 +110,62 @@
             color: #EC8305;
         }
 
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 1001;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #091057;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #EC8305;
+            color: #ffffff;
+        }
+
         .content {
             text-align: center;
-            margin-top: 120px;
+            padding-top: 150px;
+            padding-bottom: 50px;
             position: relative;
-            z-index: 5;
         }
 
         .tabs {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(240, 240, 240, 0.7));
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
             display: inline-block;
-            border-radius: 10px;
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 1s ease-in-out;
+            border-radius: 15px;
+            box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         .tabs button {
             background: linear-gradient(145deg, #024CAA, #005BBB);
             border: none;
             color: #ffffff;
-            margin: 0 10px;
-            padding: 10px 20px;
+            margin: 0 15px;
+            padding: 12px 25px;
             border-radius: 50px;
-            font-size: 1em;
+            font-size: 1.1em;
             cursor: pointer;
             transition: transform 0.2s, background-color 0.3s, color 0.3s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .tabs button:hover {
@@ -118,17 +175,14 @@
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.5);
             margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 15px;
             display: inline-block;
             color: #091057;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.8s ease;
-            background-image: url('{{ asset('images/pattern.png') }}');
-            background-size: 150px;
-            background-blend-mode: overlay;
         }
 
         .hidden {
@@ -138,13 +192,13 @@
         .search-btn, .calculate-btn {
             background: linear-gradient(145deg, #024CAA, #005BBB);
             border: none;
-            padding: 10px;
+            padding: 15px 30px;
             color: white;
             border-radius: 50px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 1.2em;
             transition: transform 0.2s, background-color 0.3s, color 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .search-btn:hover, .calculate-btn:hover {
@@ -153,66 +207,13 @@
             color: #ffffff;
         }
 
-        .shipping-days-table, .shipping-rates-table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .shipping-days-table th, .shipping-days-table td, .shipping-rates-table th, .shipping-rates-table td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            font-size: 0.9em;
-            transition: background-color 0.3s;
-        }
-
-        .shipping-days-table th, .shipping-rates-table th {
-            background-color: #024CAA;
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        .shipping-days-table tr:nth-child(even), .shipping-rates-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .shipping-rates-table tr:hover {
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-
-        .shipping-rates-table td {
-            font-weight: bold;
-        }
-
-        .form-group label {
-            font-weight: bold;
-            color: #024CAA;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-group select {
+        input[type="text"], select {
             width: 100%;
             padding: 10px;
+            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 1em;
-        }
-
-        #result {
-            width: 90%;
-            margin: 20px auto;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes fadeIn {
@@ -224,37 +225,96 @@
             from { transform: translateY(50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        .shipping-days-table, #shipping-rates-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .shipping-days-table th, .shipping-days-table td, #shipping-rates-table th, #shipping-rates-table td {
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .shipping-days-table th, #shipping-rates-table th {
+            background: linear-gradient(145deg, #091057, #09247B);
+            color: #fff;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .shipping-days-table tr:hover, #shipping-rates-table tr:hover {
+            background-color: #f7f7f7;
+            cursor: pointer;
+        }
+
+        .about-section, .services-section {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 50px auto;
+            max-width: 800px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #091057;
+        }
+
+        .about-section h2, .services-section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .about-section p, .services-section p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">
-            <div class="logo-circle">
-                <img src="{{ asset('images/jgab_logo3.png') }}" alt="JGAB Express Logo">
-            </div>
-            <div class="logo-text">
-                <h1>JGAB Express</h1>
-                <p>Stay Informed, Stay on Track</p>
-            </div>
-        </div>
-        <nav>
-            <a href="#about-us">About Us</a>
-            <a href="#services">Services</a>
-            @guest
-                <a href="{{ route('login') }}">Log In</a>
-                <a href="{{ route('register') }}">Register</a>
-            @else
-                <a href="{{ route('user.dashboard') }}">Dashboard</a>
-            @endguest
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle">Driver Access</a>
-                <div class="dropdown-menu">
-                    <a href="{{ route('driver.login') }}">Driver Log In</a>
-                    <a href="{{ route('driver.register') }}">Driver Register</a>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-circle">
+                    <img src="{{ asset('images/jgab_logo3.png') }}" alt="JGAB Express Logo">
+                </div>
+                <div class="logo-text">
+                    <h1>JGAB Express</h1>
                 </div>
             </div>
-        </nav>
-    </header>
+            <nav>
+                <a href="#about-us">About Us</a>
+                <a href="#services">Services</a>
+                @guest
+                    <a href="{{ route('login') }}">Log In</a>
+                    <a href="{{ route('register') }}">Register</a>
+                @else
+                    <a href="{{ route('user.dashboard') }}">Dashboard</a>
+                @endguest
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">Driver Access</a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('driver.login') }}">Driver Log In</a>
+                        <a href="{{ route('driver.register') }}">Driver Register</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    <script>
+    function toggleDropdown(event) {
+        event.preventDefault();
+        const dropdownMenu = event.target.nextElementSibling;
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+</header>
 
     <section class="content">
         <div class="tabs">
@@ -270,9 +330,10 @@
                 @csrf
                 <label for="order_number">Order Number</label>
                 <input type="text" id="order_number" name="order_number" placeholder="Enter your order number" required>
-                <button type="submit" class="search-btn">🔍 Search</button>
+                <button type="submit" class="search-btn">⌕ Search</button>
             </form>
 
+            <!-- Display error if the order is not found -->
             @if ($errors->has('order_number'))
                 <p style="color: red;">{{ $errors->first('order_number') }}</p>
             @endif
@@ -291,7 +352,6 @@
                         <option value="davao-del-sur">Davao Del Sur</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="destination">Destination:</label>
                     <select id="destination" name="destination" required>
@@ -302,8 +362,7 @@
                         <option value="davao-del-sur">Davao Del Sur</option>
                     </select>
                 </div>
-
-                <div class="form-group bag-specs">
+                <div class="form-group">
                     <label for="bag_specifications">Bag Specifications:</label>
                     <select id="bag_specifications" name="bag_specifications" required>
                         <option value="small">Small (&lt;= 2KG)</option>
@@ -311,22 +370,19 @@
                         <option value="large">Large (&lt;= 10KG)</option>
                     </select>
                 </div>
-
                 <button type="submit" class="calculate-btn">Calculate Shipping Cost</button>
             </form>
-
-            <div id="result">
+            <div id="result" style="display: none;">
                 <h3>Shipping Cost Calculation</h3>
                 <p><strong>Origin:</strong> <span id="result-origin"></span></p>
                 <p><strong>Destination:</strong> <span id="result-destination"></span></p>
                 <p><strong>Bag Specifications:</strong> <span id="result-bag-specifications"></span></p>
-                <p class="total-amount" style="font-size: 1.2em; color: #EC8305; font-weight: bold;"><strong>Total Amount:</strong> PHP <span id="result-cost"></span></p>
+                <p class="total-amount"><strong>Total Amount:</strong> PHP <span id="result-cost"></span></p>
             </div>
         </div>
 
         <div class="section hidden" id="shipping-days">
             <h2>Shipping Days</h2>
-            <p>Here are the estimated shipping days for different locations...</p>
             <table class="shipping-days-table">
                 <thead>
                     <tr>
@@ -359,12 +415,12 @@
             </table>
         </div>
 
-        <div id="about-us" class="about-section" style="margin-top: 400px; opacity: 0.95;">
+        <div id="about-us" class="about-section">
             <h2>About Us</h2>
             <p>JGAB Express is committed to providing fast and reliable delivery services across the region. We strive to offer the best experience for our customers with a focus on efficiency and customer satisfaction.</p>
         </div>
 
-        <div id="services" class="services-section" style="margin-top: 300px; opacity: 0.95;">
+        <div id="services" class="services-section">
             <h2>Our Services</h2>
             <p>We offer a wide range of logistics and delivery services, including express shipping, cargo handling, and doorstep delivery. Our network ensures that your packages are delivered safely and on time.</p>
         </div>
@@ -387,7 +443,6 @@
             document.getElementById('tracking-form').classList.add('hidden');
             document.getElementById('shipping-rates').classList.add('hidden');
             document.getElementById('shipping-days').classList.add('hidden');
-
             document.getElementById(sectionId).classList.remove('hidden');
         }
 
@@ -406,17 +461,9 @@
                 'davao-del-sur': 11
             };
 
-            const weightRates = {
-                'small': 1,     // Weight multiplier for <= 2KG
-                'medium': 1.5,  // Weight multiplier for <= 5KG
-                'large': 2      // Weight multiplier for <= 10KG
-            };
-
             const originRate = rates[origin] || 0;
             const destinationRate = rates[destination] || 0;
-            const weightMultiplier = weightRates[bagSpecifications] || 1;
-
-            const shippingCost = (originRate + destinationRate) * weightMultiplier;
+            const shippingCost = (originRate + destinationRate) * 2;
 
             document.getElementById('result-origin').textContent = origin.replace(/-/g, ' ').toUpperCase();
             document.getElementById('result-destination').textContent = destination.replace(/-/g, ' ').toUpperCase();
