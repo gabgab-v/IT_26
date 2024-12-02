@@ -17,6 +17,10 @@
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
+            <a href="{{ route('admin.admin_warehouse.orders.index') }}" class="btn btn-primary">
+                Test Warehouse Orders Route
+            </a>
+
         </nav>
     </header>
 
@@ -71,6 +75,26 @@
                     <td>
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
+                        @if ($order->status === 'Pending')
+                            <form action="{{ route('admin.orders.process', $order->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="search-btn">Process Order</button>
+                            </form>
+                        @endif
+
+
+                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('PATCH')
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
+                                <option value="ready_for_shipping" {{ $order->status === 'ready_for_shipping' ? 'selected' : '' }}>Ready for Shipping</option>
+                                <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                                <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                            </select>
+                        </form>
+
+
                         
                         @if ($order->status === 'delivered' && !$order->is_fully_delivered)
                             <form action="{{ route('admin.orders.confirm_delivery', $order->id) }}" method="POST" style="display:inline;">

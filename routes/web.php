@@ -35,6 +35,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('warehouses', WarehouseController::class);
         Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
         Route::patch('orders/{order}/mark-delivered', [OrderController::class, 'markAsDelivered'])->name('admin.orders.mark_delivered');
+        Route::post('/orders/{order}/process', [OrderController::class, 'processOrder'])->name('orders.process');
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::get('/warehouse/orders', [OrderController::class, 'warehouseView'])->name('admin_warehouse.orders.index');
+
+        Route::post('/warehouse/orders/{order}/ready-for-shipping', [OrderController::class, 'confirmReadyForShipping'])->name('admin.orders.ready_for_shipping');
+
+        
+
 
         Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
 

@@ -324,5 +324,83 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')->with('success', 'Order fully delivered and removed from driver view.');
     }
 
+    public function processOrder(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+    
+        // Normalize case for comparison
+        if (strtolower($order->status) !== 'pending') {
+            return redirect()->back()->with('error', 'Only pending orders can be processed.');
+        }
+    
+        // Update order status to "processing"
+        $order->status = 'processing';
+        $order->save();
+    
+        // Notify the warehouse 
+        // $warehouse = $order->warehouse;
+        // if ($warehouse) {
+        //     $warehouse->notify(new OrderProcessed($order));
+        // }
+    
+        return redirect()->route('admin.orders.index')->with('success', 'Order is now being processed.');
+    }
+    
+    
+    public function updateStatus(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        $request->validate([
+            'status' => 'required|in:processing,ready_for_shipping,shipped,delivered',
+        ]);
+
+        $order->status = $request->input('status');
+        $order->save();
+
+        // Add logic for each status
+        if ($order->status === 'ready_for_shipping') {
+            \Log::info("Order #{$order->id} is ready for shipping. Notify driver.");
+        }
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order status updated.');
+    }
+
+    public function warehouseView()
+    {
+        Log::info("admin_warehouse route accessed.");
+        
+        $orders = Order::where('status', 'processing')->with(['customer', 'warehouse'])->get();
+    
+        if ($orders->isEmpty()) {
+            Log::info("No orders found with status 'processing'.");
+        } else {
+            Log::info("Orders fetched:", ['orders' => $orders->toArray()]);
+        }
+    
+        return view('admin.orders.warehouse', ['orders' => $orders]);
+    }
+    
+    
+
+    public function confirmReadyForShipping(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+    
+        if ($order->status !== 'processing') {
+            return redirect()->back()->with('error', 'Only orders in processing status can be marked as ready for shipping.');
+        }
+    
+        $order->status = 'ready_for_shipping';
+        $order->parcel_location = 'At Warehouse'; // Optional location update
+        $order->save();
+    
+        return redirect()->route('admin.orders.warehouse')->with('success', 'Order marked as ready for shipping.');
+    }
+    
+
+
+
+
 
 }
