@@ -38,6 +38,20 @@
             filter: brightness(0.8);
         }
 
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('{{ asset('images/BG.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
         header {
             position: fixed;
             top: 0;
@@ -318,6 +332,8 @@
                 <input type="text" id="order_number" name="order_number" placeholder="Enter your order number" required>
                 <button type="submit" class="search-btn">⌕ Search</button>
             </form>
+
+            <!-- Display error if the order is not found -->
             @if ($errors->has('order_number'))
                 <p style="color: red;">{{ $errors->first('order_number') }}</p>
             @endif

@@ -1,131 +1,245 @@
-<x-guest-layout>
-    <section class="content login-content">
-        <h1 class="login-title">Admin Login</h1>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <form method="POST" action="{{ route('admin.login') }}" class="login-form">
-            @csrf
+        <style>
+            body {
+                background: linear-gradient(135deg, #e3f2fd, #e1bee7);
+                font-family: 'Figtree', sans-serif;
+                margin: 0;
+                color: #091057;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                animation: backgroundFade 3s ease-in-out infinite alternate;
+            }
 
-            <!-- Email Address -->
-            <div class="input-group">
-                <x-input-label for="email" :value="__('Email')" class="input-label" />
-                <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" class="input-field" />
-                <x-input-error :messages="$errors->get('email')" class="error-text" />
+            @keyframes backgroundFade {
+                0% { filter: brightness(1); }
+                100% { filter: brightness(0.9); }
+            }
+
+            .logo {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .center-logo {
+                max-width: 150px;
+                width: 100%;
+                height: auto;
+                margin-bottom: 1rem;
+                animation: rotateIn 1.5s ease;
+            }
+
+            @keyframes rotateIn {
+                from { transform: rotate(-180deg); opacity: 0; }
+                to { transform: rotate(0); opacity: 1; }
+            }
+
+            .login-container {
+                width: 100%;
+                max-width: 400px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+                border-radius: 12px;
+                padding: 2.5rem;
+                text-align: center;
+                animation: slideIn 0.5s ease-out forwards;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .form-header {
+                text-align: center;
+                margin-bottom: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .form-header h1 {
+                font-size: 1.8rem;
+                font-weight: bold;
+                color: #091057;
+                animation: fadeInText 1.2s ease-in-out;
+            }
+
+            @keyframes fadeInText {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .input-field-container {
+                position: relative;
+                width: 100%;
+                margin-bottom: 1.5rem;
+            }
+
+            .input-field {
+                width: 100%;
+                padding: 0.85rem;
+                padding-right: 3rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-size: 1rem;
+                background: #f9f9f9;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+
+            .input-field:focus {
+                border-color: #3f51b5;
+                box-shadow: 0 0 5px rgba(63, 81, 181, 0.5);
+                outline: none;
+            }
+
+            .password-toggle {
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                transform: translateY(-50%);
+                cursor: pointer;
+                font-size: 1.4rem;
+                color: #555;
+                transition: color 0.3s;
+            }
+
+            .password-toggle:hover {
+                color: #3f51b5;
+            }
+
+            .actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .checkbox-label {
+                font-size: 0.85rem;
+                color: #555;
+            }
+
+            .checkbox-input {
+                margin-right: 0.5rem;
+            }
+
+            .forgot-password-link {
+                font-size: 0.85rem;
+                color: #3f51b5;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+            .forgot-password-link:hover {
+                color: #1a237e;
+            }
+
+            .login-button {
+                background: #EC8305;
+                color: white;
+                padding: 0.8rem 1.5rem;
+                font-size: 1.1rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.3s, transform 0.2s;
+                width: 100%;
+                display: block;
+            }
+
+            .login-button:hover {
+                background: #EC8305;
+                transform: translateY(-2px);
+            }
+
+            .error-text {
+                font-size: 0.85rem;
+                color: #e53935;
+            }
+        </style>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body>
+        <div class="logo">
+            <img src="{{ asset('images/logo.png') }}" alt="JGAB Express Logo" class="center-logo">
+        </div>
+        <div class="login-container">
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p class="login-subtitle">Please sign in to continue</p>
             </div>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
 
-            <!-- Password -->
-            <div class="input-group mt-4">
-                <x-input-label for="password" :value="__('Password')" class="input-label" />
-                <x-text-input id="password" type="password" name="password" required autocomplete="current-password" class="input-field" />
-                <x-input-error :messages="$errors->get('password')" class="error-text" />
-            </div>
+                <!-- Email Address -->
+                <div class="input-field-container">
+                    <input id="email" type="email" name="email" placeholder="Enter your email" :value="old('email')" required autofocus class="input-field">
+                    <x-input-error :messages="$errors->get('email')" class="error-text" />
+                </div>
 
-            <!-- Remember Me -->
-            <!-- <div class="flex items-center mt-4">
-                <label for="remember_me" class="checkbox-label">
-                    <input id="remember_me" type="checkbox" class="checkbox-input" name="remember">
-                    <span>{{ __('Remember me') }}</span>
-                </label>
-            </div> -->
+                <!-- Password with Toggle -->
+                <div class="input-field-container">
+                    <input id="password" type="password" name="password" placeholder="Enter your password" required class="input-field">
+                    <span id="toggle-password" class="password-toggle">
+                        <i id="eye-icon" class="fas fa-eye"></i>
+                    </span>
+                    <x-input-error :messages="$errors->get('password')" class="error-text" />
+                </div>
 
-            <!-- Login Actions -->
-            <div class="flex items-center justify-between mt-4">
-                <!-- @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="forgot-password-link">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif -->
+                <!-- Actions -->
+                <div class="actions">
+                    <label for="remember_me" class="checkbox-label">
+                        <input id="remember_me" type="checkbox" class="checkbox-input" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="forgot-password-link">Forgot password?</a>
+                    @endif
+                </div>
 
-                <x-primary-button class="login-button">
-                    {{ __('Log in') }}
-                </x-primary-button>
-            </div>
-        </form>
-    </section>
+                <!-- Login Button -->
+                <button type="submit" class="login-button">
+                    Sign In
+                </button>
+            </form>
+        </div>
 
-    <!-- Add custom styles for admin login page -->
-    <style>
-        .content {
-            max-width: 400px;
-            margin: auto;
-            padding: 2rem;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .login-title {
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
+        <script>
+            document.getElementById('toggle-password').addEventListener('click', function () {
+                const passwordField = document.getElementById('password');
+                const eyeIcon = document.getElementById('eye-icon');
+                const isPasswordVisible = passwordField.type === 'text';
 
-        .input-group {
-            margin-bottom: 1rem;
-        }
+                // Toggle between password and text
+                passwordField.type = isPasswordVisible ? 'password' : 'text';
 
-        .input-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 0.5rem;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            background-color: #fff;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .checkbox-input {
-            margin-right: 0.5rem;
-            accent-color: #4f46e5;
-        }
-
-        .forgot-password-link {
-            font-size: 0.85rem;
-            color: #4f46e5;
-            text-decoration: underline;
-        }
-
-        .forgot-password-link:hover {
-            color: #3730a3;
-        }
-
-        .login-button {
-            background-color: #024CAA;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            color: #fff;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .login-button:hover {
-            background-color: #3730a3;
-        }
-
-        .error-text {
-            color: #e53e3e;
-            font-size: 0.85rem;
-        }
-    </style>
-</x-guest-layout>
+                // Update eye icon
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        </script>
+    </body>
+</html>
