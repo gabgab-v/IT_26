@@ -133,7 +133,7 @@
         }
 
         .tabs {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.5);
             padding: 20px;
             display: inline-block;
             border-radius: 15px;
@@ -161,7 +161,7 @@
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.5);
             margin-top: 20px;
             padding: 30px;
             border-radius: 15px;
@@ -243,7 +243,7 @@
         }
 
         .about-section, .services-section {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.5);
             padding: 30px;
             border-radius: 15px;
             margin: 50px auto;
