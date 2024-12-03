@@ -41,7 +41,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::post('/warehouse/orders/{order}/ready-for-shipping', [OrderController::class, 'confirmReadyForShipping'])->name('admin.orders.ready_for_shipping');
 
-        
+        Route::get('/warehouse/orders', [OrderController::class, 'warehouseView'])->name('admin.warehouse.orders.list');
+
 
 
         Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
@@ -50,8 +51,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Assign Driver routes
         Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])
             ->name('orders.assign_driver_page');
-        Route::post('orders/{order}/assign-driver', [OrderController::class, 'assignDriver'])
-            ->name('orders.assign_driver');
+        Route::post('/orders/{order}/assign-driver', [OrderController::class, 'assignDriver'])->name('orders.assign_driver');
+
 
         // Profile management for admins
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

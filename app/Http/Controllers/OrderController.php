@@ -25,7 +25,8 @@ class OrderController extends Controller
             'date_ordered_to' => 'nullable|date|after_or_equal:date_ordered_from',
         ]);
     
-        $query = Order::with(['customer', 'warehouse'])->where('is_archived', false);
+        $query = Order::with(['customer', 'warehouse', 'driver']) // Include driver relationship
+                      ->where('is_archived', false);
     
         // Filter by delivery status
         if ($request->has('is_delivered') && $request->is_delivered !== '') {
@@ -33,20 +34,18 @@ class OrderController extends Controller
         }
     
         // Filter by date range
-        // Filter by date range
         if ($request->filled('date_ordered_from') && $request->filled('date_ordered_to')) {
             $dateOrderedFrom = Carbon::parse($request->input('date_ordered_from'))->startOfDay();
             $dateOrderedTo = Carbon::parse($request->input('date_ordered_to'))->endOfDay();
-
+    
             // Apply the filter
             $query->where(function ($q) use ($dateOrderedFrom, $dateOrderedTo) {
                 $q->whereBetween('date_ordered', [$dateOrderedFrom, $dateOrderedTo])
-                ->orWhereBetween('delivered_at', [$dateOrderedFrom, $dateOrderedTo]);
+                  ->orWhereBetween('delivered_at', [$dateOrderedFrom, $dateOrderedTo]);
             });
         } else {
             \Log::info('Date range not applied: Missing parameters date_ordered_from or date_ordered_to.');
         }
-
     
         // Log the query and bindings
         \Log::info('SQL Query:', [$query->toSql()]);
@@ -55,9 +54,8 @@ class OrderController extends Controller
         // Execute and log the results
         $orders = $query->get();
         \Log::info('Query Results:', $orders->toArray());
-
     
-        // Get all drivers (no changes needed here)
+        // Get all drivers
         $drivers = Driver::all();
     
         return view('admin.orders.index', compact('orders', 'drivers'));
@@ -395,7 +393,8 @@ class OrderController extends Controller
         $order->parcel_location = 'At Warehouse'; // Optional location update
         $order->save();
     
-        return redirect()->route('admin.orders.warehouse')->with('success', 'Order marked as ready for shipping.');
+        return redirect()->route('admin.admin.warehouse.orders.list')->with('success', 'Order marked as ready for shipping.');
+
     }
     
 

@@ -17,9 +17,7 @@
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
-            <a href="{{ route('admin.admin_warehouse.orders.index') }}" class="btn btn-primary">
-                Test Warehouse Orders Route
-            </a>
+            <a href="{{ route('admin.admin.warehouse.orders.list') }}" class="btn btn-primary">View Warehouse Orders</a>
 
         </nav>
     </header>
@@ -56,6 +54,7 @@
                     <th>Warehouse</th>
                     <th>Parcel Locations</th>
                     <th>Fully Delivered</th>
+                    <th>Driver</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -73,8 +72,16 @@
                         {{ $order->is_fully_delivered ? 'Yes' : 'Pending Confirmation' }}
                     </td>
                     <td>
+                        @if ($order->driver)
+                            {{ $order->driver->name }}
+                        @else
+                            Not Assigned
+                        @endif
+                    </td>
+                    <td>
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
+
                         @if ($order->status === 'Pending')
                             <form action="{{ route('admin.orders.process', $order->id) }}" method="POST" style="display:inline;">
                                 @csrf
@@ -82,20 +89,21 @@
                             </form>
                         @endif
 
+                        {{-- Show Assign Driver dropdown only if no driver is assigned --}}
+                        @if ($order->status === 'ready_for_shipping' && !$order->driver)
+                            <form id="assignDriverForm-{{ $order->id }}" action="{{ route('admin.orders.assign_driver', $order->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <label for="driver-{{ $order->id }}">Assign Driver:</label>
+                                <select id="driver-{{ $order->id }}" name="driver_id" onchange="document.getElementById('assignDriverForm-{{ $order->id }}').submit();">
+                                    <option value="">Select Driver</option>
+                                    @foreach ($drivers as $driver)
+                                        <option value="{{ $driver->id }}">{{ $driver->name }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        @endif
 
-                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('PATCH')
-                            <select name="status" onchange="this.form.submit()">
-                                <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
-                                <option value="ready_for_shipping" {{ $order->status === 'ready_for_shipping' ? 'selected' : '' }}>Ready for Shipping</option>
-                                <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                            </select>
-                        </form>
-
-
-                        
+                        {{-- Show Confirm Fully Delivered button for delivered but not fully confirmed orders --}}
                         @if ($order->status === 'delivered' && !$order->is_fully_delivered)
                             <form action="{{ route('admin.orders.confirm_delivery', $order->id) }}" method="POST" style="display:inline;">
                                 @csrf
@@ -104,6 +112,7 @@
                             </form>
                         @endif
                     </td>
+
                 </tr>
                 @endforeach
             </tbody>
