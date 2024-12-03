@@ -18,11 +18,20 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
     
         if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->route('admin.dashboard'); // Ensures redirection to admin dashboard
+            $admin = Auth::guard('admin')->user(); // Get the authenticated admin
+    
+            // Redirect based on the admin's role
+            if ($admin->role === 'warehouse') {
+                return redirect()->route('admin.admin.warehouse.orders.list');
+            }
+    
+            // Default redirection for other roles
+            return redirect()->route('admin.dashboard');
         }
     
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
     }
+    
     
     
 

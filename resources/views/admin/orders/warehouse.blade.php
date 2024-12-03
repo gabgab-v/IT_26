@@ -3,6 +3,14 @@
 @section('content')
     <h1>Warehouse Orders</h1>
 
+    {{-- Logout Button for Warehouse Admin --}}
+    @if (auth('admin')->user()->role === 'warehouse')
+        <form action="{{ route('admin.logout') }}" method="POST" style="text-align: right; margin-bottom: 20px;">
+            @csrf
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    @endif
+
     <table class="order-table">
         <thead>
             <tr>

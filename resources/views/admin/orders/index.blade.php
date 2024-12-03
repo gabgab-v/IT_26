@@ -17,7 +17,6 @@
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
-            <a href="{{ route('admin.admin.warehouse.orders.list') }}" class="btn btn-primary">View Warehouse Orders</a>
 
         </nav>
     </header>
