@@ -77,22 +77,20 @@ class Order extends Model
         return $this->belongsTo(Driver::class, 'driver_id');
     }
 
-    public function getDurationOfOrderAttribute()
-    {
-        if ($this->date_ordered && $this->is_delivered) {
-            return now()->diffInDays($this->date_ordered);
-        }
-        return null; // Or calculate based on other criteria if needed
-    }
-
     // If you want to calculate it dynamically in PHP instead of relying on the trigger:
     public function getDurationAttribute()
     {
-        if ($this->is_fully_delivered && $this->created_at) {
-            return $this->created_at->diffInMinutes(now());
+        // Use delivered_at if available, otherwise use the current time
+        $end = $this->delivered_at ?? now();
+    
+        // Ensure the order has a creation date
+        if ($this->created_at) {
+            return $this->created_at->diffForHumans($end, true); // Human-readable duration
         }
+    
         return null;
     }
+    
 
 
 }

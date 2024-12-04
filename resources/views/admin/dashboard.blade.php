@@ -31,7 +31,7 @@
                 <p style="font-size: 1.5em; font-weight: bold;">{{ $totalCustomers }}</p>
             </div>
             <div class="card" style="flex: 1; background-color: #024CAA; color: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); text-align: center;">
-                <h2>Total Revenue (₱)</h2>
+                <h2>Total Parcel Prices (₱)</h2>
                 <p style="font-size: 1.5em; font-weight: bold;">₱{{ number_format($totalRevenue, 2) }}</p>
             </div>
         </div>
