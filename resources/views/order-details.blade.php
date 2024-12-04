@@ -26,8 +26,10 @@
             
             <div class="order-info space-y-2 text-gray-700 dark:text-gray-300">
                 <p><strong>Order Number:</strong> {{ $order->order_number }}</p>
-                <p><strong>Status:</strong> {{ $order->status }}</p>
-                <p><strong>Total Price:</strong> ${{ $order->total_price }}</p>
+                <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
+                <p><strong>Warehouse:</strong> {{ optional($order->warehouse)->name ?? 'Not assigned' }}</p>
+                <p><strong>Driver:</strong> {{ optional($order->driver)->name ?? 'Not assigned' }}</p>
+                <p><strong>Order Date:</strong> {{ $order->created_at->format('F d, Y') }}</p>
                 <!-- Add more details as needed -->
             </div>
 

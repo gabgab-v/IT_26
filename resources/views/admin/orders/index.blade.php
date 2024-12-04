@@ -61,7 +61,7 @@
                 @foreach ($orders as $order)
                 <tr>
                     <td>{{ $order->order_number }}</td>
-                    <td>{{ optional($order->customer)->name ?? 'No customer' }}</td>
+                    <td>{{ optional($order->user)->name ?? 'Anonymous' }}</td>
                     <td>₱{{ number_format($order->total_price, 2) }}</td>
                     <td>{{ ucfirst($order->status) }}</td>
                     <td>{{ $order->duration ?? 'N/A' }}</td>
@@ -80,6 +80,12 @@
                     <td>
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
+                        @if ($order->status !== 'cancelled')
+                            <!-- Cancel Order Button -->
+                            <button class="btn btn-danger" onclick="showCancelModal({{ $order->id }})">Cancel Order</button>
+                        @else
+                            <span>Cancelled</span>
+                        @endif
 
                         @if ($order->status === 'Pending')
                             <form action="{{ route('admin.orders.process', $order->id) }}" method="POST" style="display:inline;">
@@ -111,6 +117,26 @@
                             </form>
                         @endif
                     </td>
+                    <!-- Modal for Cancel Order -->
+<div id="cancelModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background-color: white; border: 1px solid black; z-index: 1000;">
+    <h2>Cancel Order</h2>
+    <form id="cancelForm" method="POST">
+        @csrf
+        @method('PATCH')
+        <label for="cancel_reason">Reason for Cancellation:</label>
+        <div>
+            <input type="radio" name="cancel_reason" value="Out of Stock"> Out of Stock<br>
+            <input type="radio" name="cancel_reason" value="Customer Request"> Customer Request<br>
+            <input type="radio" name="cancel_reason" value="Other"> Other<br>
+        </div>
+        <div id="otherReasonContainer" style="display: none;">
+            <label for="other_reason">Specify Reason:</label>
+            <input type="text" name="other_reason" id="other_reason">
+        </div>
+        <button type="submit" class="btn btn-danger">Submit</button>
+        <button type="button" onclick="closeModal()" class="btn">Close</button>
+    </form>
+</div>
 
                 </tr>
                 @endforeach

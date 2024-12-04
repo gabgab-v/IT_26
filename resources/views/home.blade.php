@@ -175,6 +175,7 @@
                 <img src="{{ asset('images/jgab_logo3.png') }}" alt="Profile">
             </div> -->
                 <!-- Driver dropdown menu -->
+            @guest
             <div class="dropdown">
                 <a href="#" class="dropdown-toggle">Driver Access</a>
                 <div class="dropdown-menu">
@@ -182,6 +183,7 @@
                     <a href="{{ route('driver.register') }}">Driver Register</a>
                 </div>
             </div>
+            @endguest
         </nav>
     </header>
 

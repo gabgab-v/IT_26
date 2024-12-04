@@ -162,10 +162,10 @@ class OrderController extends Controller
         $request->validate([
             'order_number' => 'required|string',
         ]);
-
+    
         // Search for the order by order number
         $order = Order::where('order_number', $request->order_number)->first();
-
+    
         if (auth()->check()) {
             // Log the search
             OrderLog::create([
@@ -173,8 +173,14 @@ class OrderController extends Controller
                 'order_number' => $request->order_number,
                 'searched_at' => now(),
             ]);
+    
+            // Assign the user_id to the order if not already assigned
+            if ($order && !$order->user_id) {
+                $order->user_id = auth()->id();
+                $order->save();
+            }
         }
-
+    
         if ($order) {
             // Return view with order details if found
             return view('order-details', ['order' => $order]);
@@ -182,8 +188,8 @@ class OrderController extends Controller
             // Redirect back with an error message if not found
             return redirect()->route('track-order')->withErrors(['order_number' => 'Order not found.']);
         }
-
     }
+    
 
     // For assigning a driver to an order
     public function assignDriver(Request $request, $orderId)
