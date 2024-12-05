@@ -9,15 +9,6 @@
             @csrf
 
             <div style="margin-bottom: 15px;">
-                <label for="customer" style="display: block; font-size: 1.1em; color: #091057;">Customer:</label>
-                <select name="customer_id" id="customer_id" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
-                    @foreach ($customers as $customer)
-                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div style="margin-bottom: 15px;">
                 <label for="total_price" style="display: block; font-size: 1.1em; color: #091057;">Total Price:</label>
                 <input type="number" name="total_price" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
             </div>
@@ -41,10 +32,10 @@
                 <input type="text" name="parcel_location" id="parcel_location" placeholder="Enter current location" style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
             </div>
 
-
             <button type="submit" style="background-color: #024CAA; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; width: 100%; transition: background-color 0.3s ease;">
                 Create Order
             </button>
         </form>
     </div>
 @endsection
+

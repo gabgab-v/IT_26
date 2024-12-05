@@ -116,7 +116,7 @@
                             @method('PATCH')
                             <select name="status" onchange="this.form.submit()">
                                 <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="in_transit" {{ $order->status == 'in_transit' ? 'selected' : '' }}>In Transit</option>
+                                <option value="Out for Delivery" {{ $order->status == 'Out for Delivery' ? 'selected' : '' }}>Out for Delivery</option>
                                 <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
                             </select>
                             <noscript>

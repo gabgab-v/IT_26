@@ -49,7 +49,7 @@ class DriverDashboardController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => 'required|string|in:pending,in_transit,delivered',
+            'status' => 'required|string|in:pending,Out for Delivery,delivered',
         ]);
     
         // Ensure the driver owns the order

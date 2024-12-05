@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\OrderLog;
 use App\Models\Driver;
 use App\Models\Warehouse;
+use App\Models\User;
 use App\Models\ParcelLocation;
 use Carbon\Carbon;
 
@@ -67,27 +68,30 @@ class OrderController extends Controller
     // Show the form for creating a new order
     public function create()
     {
-        $customers = Customer::all();  // Retrieve all customers
+        $users = User::all();  // Retrieve all users instead of customers
         $warehouses = Warehouse::all();
-        return view('admin.orders.create', compact('customers', 'warehouses')); // Updated path
+        return view('admin.orders.create', compact('users', 'warehouses')); // Pass 'users' to the view
     }
-
-    // Store a newly created order in the database
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_id' => 'required',
             'total_price' => 'required|numeric',
             'status' => 'required',
             'warehouse_id' => 'required|exists:warehouses,id',
             'parcel_location' => 'nullable|string',
         ]);
     
-        // Create the order using the validated data (order_number will be generated)
+        // Manually add user_id as null
+        $validated['user_id'] = null;
+    
         Order::create($validated);
     
-        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully'); // Updated route
+        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully');
     }
+    
+    
+    
     
 
     // Display the specified order
