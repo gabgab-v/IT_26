@@ -76,19 +76,20 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id', // Ensure a valid user is selected
             'total_price' => 'required|numeric',
-            'status' => 'required',
+            'status' => 'required|string',
             'warehouse_id' => 'required|exists:warehouses,id',
             'parcel_location' => 'nullable|string',
         ]);
-    
-        // Manually add user_id as null
-        $validated['user_id'] = null;
     
         Order::create($validated);
     
         return redirect()->route('admin.orders.index')->with('success', 'Order created successfully');
     }
+    
+    
+    
     
     
     

@@ -30,6 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
         Route::get('orders/delivered', [OrderController::class, 'delivered'])->name('orders.delivered');
+        Route::get('/orders/create', [OrderController::class, 'create'])->name('admin.orders.create');
         Route::resource('orders', OrderController::class); // Admin access for CRUD operations
         
         Route::resource('warehouses', WarehouseController::class);

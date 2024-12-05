@@ -9,6 +9,17 @@
             @csrf
 
             <div style="margin-bottom: 15px;">
+                <label for="user_id" style="display: block; font-size: 1.1em; color: #091057;">Select User:</label>
+                <select name="user_id" id="user_id" style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;" required>
+                    <option value="">Select User</option>
+                    @foreach ($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+
+            <div style="margin-bottom: 15px;">
                 <label for="total_price" style="display: block; font-size: 1.1em; color: #091057;">Total Price:</label>
                 <input type="number" name="total_price" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #091057; border-radius: 5px;">
             </div>

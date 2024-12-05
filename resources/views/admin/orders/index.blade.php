@@ -51,7 +51,6 @@
                     <th>Status</th>
                     <th>Duration</th>
                     <th>Warehouse</th>
-                    <th>Parcel Locations</th>
                     <th>Fully Delivered</th>
                     <th>Driver</th>
                     <th>Actions</th>
@@ -66,7 +65,6 @@
                     <td>{{ ucfirst($order->status) }}</td>
                     <td>{{ $order->duration ?? 'N/A' }}</td>
                     <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
-                    <td>{{ $order->parcel_location ?? 'No parcel location' }}</td>
                     <td>
                         {{ $order->is_fully_delivered ? 'Yes' : 'Pending Confirmation' }}
                     </td>
