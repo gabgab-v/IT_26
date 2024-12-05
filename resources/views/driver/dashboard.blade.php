@@ -85,7 +85,7 @@
             <tr>
                 <th>Order Number</th>
                 <th>Customer</th>
-                <th>Current Location</th>
+                <!-- <th>Current Location</th> -->
                 <th>Destination</th>
                 <th>Status</th>
                 <th>Parcel Location</th>
@@ -97,7 +97,7 @@
                 <tr>
                     <td>{{ $order->order_number }}</td>
                     <td>{{ $order->customer->name ?? 'No customer' }}</td>
-                    <td>{{ $order->current_location }}</td>
+                    <!-- <td>{{ $order->current_location }}</td> -->
                     <td>{{ $order->destination }}</td>
                     <td>{{ $order->status }}</td>
                     <td>{{ $order->parcel_location ?? 'Not updated' }}</td>
