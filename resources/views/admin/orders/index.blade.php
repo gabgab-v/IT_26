@@ -17,6 +17,7 @@
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
+            <a href="{{ route('admin.location-fees.index') }}" class="btn btn-primary">Manage Location Fees</a>
 
         </nav>
     </header>
@@ -47,10 +48,12 @@
                 <tr>
                     <th>Order Number</th>
                     <th>Customer</th>
-                    <th>Total Price</th>
+                    <th>Base Total Price</th>
+                    <th>Total Price (Including Fees)</th>
                     <th>Status</th>
                     <th>Duration</th>
                     <th>Warehouse</th>
+                    <th>Parcel Locations</th>
                     <th>Fully Delivered</th>
                     <th>Driver</th>
                     <th>Actions</th>
@@ -61,10 +64,12 @@
                 <tr>
                     <td>{{ $order->order_number }}</td>
                     <td>{{ optional($order->user)->name ?? 'Anonymous' }}</td>
+                    <td>₱{{ number_format($order->base_total_price, 2) }}</td>
                     <td>₱{{ number_format($order->total_price, 2) }}</td>
                     <td>{{ ucfirst($order->status) }}</td>
                     <td>{{ $order->duration ?? 'N/A' }}</td>
                     <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
+                    <td>{{ $order->parcel_location ?? 'No parcel location' }}</td>
                     <td>
                         {{ $order->is_fully_delivered ? 'Yes' : 'Pending Confirmation' }}
                     </td>
@@ -116,25 +121,25 @@
                         @endif
                     </td>
                     <!-- Modal for Cancel Order -->
-                    <div id="cancelModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background-color: white; border: 1px solid black; z-index: 1000;">
-                        <h2>Cancel Order</h2>
-                        <form id="cancelForm" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <label for="cancel_reason">Reason for Cancellation:</label>
-                            <div>
-                                <input type="radio" name="cancel_reason" value="Out of Stock"> Out of Stock<br>
-                                <input type="radio" name="cancel_reason" value="Customer Request"> Customer Request<br>
-                                <input type="radio" name="cancel_reason" value="Other"> Other<br>
-                            </div>
-                            <div id="otherReasonContainer" style="display: none;">
-                                <label for="other_reason">Specify Reason:</label>
-                                <input type="text" name="other_reason" id="other_reason">
-                            </div>
-                            <button type="submit" class="btn btn-danger">Submit</button>
-                            <button type="button" onclick="closeModal()" class="btn">Close</button>
-                        </form>
-                    </div>
+<div id="cancelModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background-color: white; border: 1px solid black; z-index: 1000;">
+    <h2>Cancel Order</h2>
+    <form id="cancelForm" method="POST">
+        @csrf
+        @method('PATCH')
+        <label for="cancel_reason">Reason for Cancellation:</label>
+        <div>
+            <input type="radio" name="cancel_reason" value="Out of Stock"> Out of Stock<br>
+            <input type="radio" name="cancel_reason" value="Customer Request"> Customer Request<br>
+            <input type="radio" name="cancel_reason" value="Other"> Other<br>
+        </div>
+        <div id="otherReasonContainer" style="display: none;">
+            <label for="other_reason">Specify Reason:</label>
+            <input type="text" name="other_reason" id="other_reason">
+        </div>
+        <button type="submit" class="btn btn-danger">Submit</button>
+        <button type="button" onclick="closeModal()" class="btn">Close</button>
+    </form>
+</div>
 
                 </tr>
                 @endforeach
@@ -263,35 +268,57 @@
         }
 
     </script>
-    <script>
-        function showCancelModal(orderId) {
-            const form = document.getElementById('cancelForm');
-            form.action = `/admin/orders/${orderId}/cancel`;
-            document.getElementById('cancelModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('cancelModal').style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-        const radioOptions = document.getElementsByName('cancel_reason');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const radioOptions = document.querySelectorAll('input[name="reason_option"]');
         const otherReasonContainer = document.getElementById('otherReasonContainer');
-        const otherReasonInput = document.getElementById('other_reason');
+        const otherReasonInput = document.getElementById('otherReasonInput');
+        const finalCancelReason = document.getElementById('finalCancelReason');
 
-        // Add event listeners to radio buttons
-        radioOptions.forEach(radio => {
+        // Add change listeners to the radio buttons
+        radioOptions.forEach((radio) => {
             radio.addEventListener('change', function () {
                 if (this.value === 'Other') {
+                    // Show the "Other" input field
                     otherReasonContainer.style.display = 'block';
-                    otherReasonInput.setAttribute('required', 'true'); // Make textbox required
+                    otherReasonInput.focus();
+                    finalCancelReason.value = ''; // Reset finalCancelReason
                 } else {
+                    // Hide the "Other" input field and update the hidden input value
                     otherReasonContainer.style.display = 'none';
-                    otherReasonInput.removeAttribute('required'); // Remove required from textbox
+                    finalCancelReason.value = this.value;
+                    otherReasonInput.value = ''; // Clear "Other" input
                 }
             });
         });
+
+        // Update the hidden input when the "Other" reason is typed
+        otherReasonInput.addEventListener('input', function () {
+            if (document.getElementById('reason_other').checked) {
+                finalCancelReason.value = this.value.trim();
+            }
+        });
+
+        // Validate the form submission
+        document.getElementById('cancelForm').addEventListener('submit', function (e) {
+            if (!finalCancelReason.value.trim()) {
+                alert('Please specify a reason for cancellation.');
+                e.preventDefault(); // Prevent submission if no reason is provided
+            }
+        });
     });
 
-    </script>
+    function showCancelModal(orderId) {
+        const form = document.getElementById('cancelForm');
+        form.action = `/admin/orders/${orderId}/cancel`; // Set the dynamic action
+        document.getElementById('cancelModal').style.display = 'block'; // Show the modal
+    }
+
+    function closeModal() {
+        document.getElementById('cancelModal').style.display = 'none'; // Hide the modal
+    }
+
+
+</script>
+
 @endsection

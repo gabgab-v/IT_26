@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LocationFee;
 use App\Models\Order;
 use App\Models\Customer;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use App\Models\Warehouse;
 use App\Models\User;
 use App\Models\ParcelLocation;
 use Carbon\Carbon;
+use App\Models\User;
 
 
 
@@ -68,24 +70,25 @@ class OrderController extends Controller
     // Show the form for creating a new order
     public function create()
     {
-        $users = User::all();  // Retrieve all users instead of customers
+        $customers = Customer::all();  // Retrieve all customers
         $warehouses = Warehouse::all();
-        return view('admin.orders.create', compact('users', 'warehouses')); // Pass 'users' to the view
+        return view('admin.orders.create', compact('customers', 'warehouses')); // Updated path
     }
     
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', // Ensure a valid user is selected
+            'customer_id' => 'required',
             'total_price' => 'required|numeric',
-            'status' => 'required|string',
+            'status' => 'required',
             'warehouse_id' => 'required|exists:warehouses,id',
             'parcel_location' => 'nullable|string',
         ]);
     
+        // Create the order using the validated data (order_number will be generated)
         Order::create($validated);
     
-        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully');
+        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully'); // Updated route
     }
     
     
@@ -98,7 +101,11 @@ class OrderController extends Controller
     // Display the specified order
     public function show(Order $order)
     {
-        return view('admin.orders.show', compact('order')); // Updated path
+        // Fetch fees for parcel_location (origin) and destination
+        $originFee = LocationFee::where('location_name', $order->parcel_location)->value('fee') ?? 0;
+        $destinationFee = LocationFee::where('location_name', $order->destination)->value('fee') ?? 0;
+    
+        return view('admin.orders.show', compact('order', 'originFee', 'destinationFee'));
     }
 
     // Show the form for editing an order
@@ -253,18 +260,33 @@ class OrderController extends Controller
     
     public function cancel(Request $request, Order $order)
     {
+        \Log::info('Request Data:', $request->all()); // Log the incoming request
+    
         $request->validate([
             'cancel_reason' => 'required|string|max:255',
+            'other_reason' => 'nullable|string|max:255',
         ]);
-
+    
+        // Override cancel_reason if "Other" is selected and other_reason is provided
+        $cancelReason = $request->cancel_reason;
+        if ($cancelReason === 'Other' && $request->filled('other_reason')) {
+            $cancelReason = $request->other_reason;
+        }
+    
+        \Log::info('Resolved Cancel Reason:', ['reason' => $cancelReason]); // Log the resolved reason
+    
+        // Update the order
         $order->update([
-            'cancel_reason' => $request->cancel_reason,
+            'cancel_reason' => $cancelReason,
             'status' => 'cancelled',
             'is_archived' => false,
         ]);
-
+    
         return redirect()->route('admin.orders.index')->with('success', 'Order cancelled successfully.');
     }
+    
+    
+    
 
     public function archived()
     {
