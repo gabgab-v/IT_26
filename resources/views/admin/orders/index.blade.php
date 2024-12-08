@@ -17,6 +17,7 @@
             <a href="{{ route('admin.orders.archived') }}" class="search-btn">Archived Orders</a>
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
+            <a href="{{ route('admin.location-fees.index') }}" class="btn btn-primary">Manage Location Fees</a>
 
         </nav>
     </header>
@@ -47,11 +48,13 @@
                 <tr>
                     <th>Order Number</th>
                     <th>Customer</th>
-                    <th>Total Price</th>
+                    <th>Base Total Price</th>
+                    <th>Total Price (Including Fees)</th>
                     <th>Status</th>
                     <th>Duration</th>
                     <th>Warehouse</th>
-                    <th>Parcel Locations</th>
+                    <th>Parcel Location (Origin)</th>
+                    <th>Destination</th>
                     <th>Fully Delivered</th>
                     <th>Driver</th>
                     <th>Actions</th>
@@ -62,11 +65,13 @@
                 <tr>
                     <td>{{ $order->order_number }}</td>
                     <td>{{ optional($order->user)->name ?? 'Anonymous' }}</td>
+                    <td>₱{{ number_format($order->base_total_price, 2) }}</td>
                     <td>₱{{ number_format($order->total_price, 2) }}</td>
                     <td>{{ ucfirst($order->status) }}</td>
                     <td>{{ $order->duration ?? 'N/A' }}</td>
                     <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
                     <td>{{ $order->parcel_location ?? 'No parcel location' }}</td>
+                    <td>{{ $order->destination ?? 'No destination' }}</td>
                     <td>
                         {{ $order->is_fully_delivered ? 'Yes' : 'Pending Confirmation' }}
                     </td>

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Driver\DriverAuthController;
 use App\Http\Controllers\Driver\DriverDashboardController;
 use App\Http\Controllers\Admin\WarehouseController;
+use App\Http\Controllers\Admin\LocationFeeController;
 
 Route::get('/', function () {
     return view('home');
@@ -43,7 +44,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/warehouse/orders', [OrderController::class, 'warehouseView'])->name('admin.warehouse.orders.list');
 
-
+        // Location Fees
+        Route::resource('location-fees', LocationFeeController::class); // Explicitly resolves the namespace
 
         Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
 

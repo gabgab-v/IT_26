@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LocationFee;
 use App\Models\Order;
 use App\Models\Customer;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Models\Driver;
 use App\Models\Warehouse;
 use App\Models\ParcelLocation;
 use Carbon\Carbon;
+use App\Models\User;
 
 
 
@@ -67,33 +69,75 @@ class OrderController extends Controller
     // Show the form for creating a new order
     public function create()
     {
-        $customers = Customer::all();  // Retrieve all customers
+        $users = User::all();  // Retrieve all customers
         $warehouses = Warehouse::all();
-        return view('admin.orders.create', compact('customers', 'warehouses')); // Updated path
+        $locationFees = LocationFee::all(); // Fetch all available locations
+        return view('admin.orders.create', compact('users', 'warehouses', 'locationFees')); // Updated path
     }
 
     // Store a newly created order in the database
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_id' => 'required',
-            'total_price' => 'required|numeric',
-            'status' => 'required',
+            'user_id' => 'required|exists:users,id',
+            'total_price' => 'required|numeric|min:0',
             'warehouse_id' => 'required|exists:warehouses,id',
             'parcel_location' => 'nullable|string',
+            'destination' => 'required|string|exists:location_fees,location_name',
         ]);
-    
-        // Create the order using the validated data (order_number will be generated)
+
+        // Automatically set the parcel_location based on the selected warehouse
+        $warehouse = Warehouse::findOrFail($validated['warehouse_id']);
+        $validated['parcel_location'] = $warehouse->location;
+
+        // Calculate location fees
+        $locationFees = $this->calculateLocationFees($validated['parcel_location'], $validated['destination']);
+
+        // Save the base total price separately
+        $baseTotalPrice = $validated['total_price'];
+
+        // Add location fees to the total price
+        $validated['total_price'] += $locationFees;
+
+        // Include the base_total_price in the order data
+        $validated['base_total_price'] = $baseTotalPrice;
+
+        // Create the order
         Order::create($validated);
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully with location fees.');
+    }
+
     
-        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully'); // Updated route
+    /**
+     * Calculate location fees for origin and destination.
+     *
+     * @param string $parcelLocation
+     * @param string $destination
+     * @return float
+     */
+    private function calculateLocationFees(string $parcelLocation, string $destination): float
+    {
+        $originFee = LocationFee::where('location_name', $parcelLocation)->value('fee') ?? 0;
+        $destinationFee = LocationFee::where('location_name', $destination)->value('fee') ?? 0;
+    
+        if (!$originFee || !$destinationFee) {
+            // Optional: Log missing fees for debugging
+            \Log::warning("Location fees missing for origin: {$parcelLocation} or destination: {$destination}");
+        }
+    
+        return $originFee + $destinationFee;
     }
     
 
     // Display the specified order
     public function show(Order $order)
     {
-        return view('admin.orders.show', compact('order')); // Updated path
+        // Fetch fees for parcel_location (origin) and destination
+        $originFee = LocationFee::where('location_name', $order->parcel_location)->value('fee') ?? 0;
+        $destinationFee = LocationFee::where('location_name', $order->destination)->value('fee') ?? 0;
+    
+        return view('admin.orders.show', compact('order', 'originFee', 'destinationFee'));
     }
 
     // Show the form for editing an order
