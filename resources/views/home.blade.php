@@ -188,28 +188,65 @@
     </header>
 
     <section class="content">
-        <div class="tabs">
-            <button id="trackBtn">Track and Trace</button>
-            <button id="ratesBtn">Shipping Rates</button>
-            <button id="daysBtn">Shipping Days</button>
-        </div>
-        <br>
-        <!-- Order Tracking Form -->
-        <div class="tracking-form" id="tracking-form">
-            <h2>Track Your Order</h2>
-            <form action="{{ route('track-order.submit') }}" method="POST">
-                @csrf
-                <label for="order_number">Order Number</label>
-                <input type="text" id="order_number" name="order_number" placeholder="Enter your order number" required>
-                <button type="submit" class="search-btn">🔍 Search</button>
-            </form>
+    <div class="tabs">
+        <h3>Navigation</h3>
+        <p>Sections below are displayed inline for testing purposes:</p>
+    </div>
 
-            <!-- Display error if the order is not found -->
-            @if ($errors->has('order_number'))
-                <p style="color: red;">{{ $errors->first('order_number') }}</p>
+    <div class="section-container">
+        <!-- Track and Trace Section -->
+        <div id="trackSection" class="content-section">
+            <div class="tracking-form">
+                <h2>Track Your Order</h2>
+                <form action="{{ route('track-order.submit') }}" method="POST">
+                    @csrf
+                    <label for="order_number">Order Number</label>
+                    <input type="text" id="order_number" name="order_number" placeholder="Enter your order number" required>
+                    <button type="submit" class="search-btn">🔍 Search</button>
+                </form>
+
+                <!-- Display error if the order is not found -->
+                @if ($errors->has('order_number'))
+                    <p style="color: red;">{{ $errors->first('order_number') }}</p>
+                @endif
+            </div>
+        </div>
+
+        <!-- Shipping Rates Section -->
+        <div id="ratesSection" class="content-section">
+            <h2>Shipping Rates</h2>
+            @if($locationFees->isEmpty())
+                <p>No shipping rates available.</p>
+            @else
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Location Name</th>
+                            <th>Shipping Fee</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($locationFees as $locationFee)
+                            <tr>
+                                <td>{{ $locationFee->location_name }}</td>
+                                <td>₱{{ number_format($locationFee->fee, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             @endif
         </div>
-    </section>
+
+        <!-- Shipping Days Section -->
+        <div id="daysSection" class="content-section">
+            <h2>Shipping Days</h2>
+            <p>Details about shipping days will go here.</p>
+        </div>
+    </div>
+</section>
+
+</section>
+
 
     <script>
         // JavaScript for button functionality

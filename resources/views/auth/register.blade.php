@@ -1,52 +1,19 @@
-<x-guest-layout>
-    <section class="content register-content">
-        <h1 class="register-title">Create a New Account</h1>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <form method="POST" action="{{ route('register') }}" class="register-form">
-            @csrf
+    <title>{{ config('app.name', 'Laravel') }} - Register</title>
 
-            <!-- Name -->
-            <div class="input-group">
-                <x-input-label for="name" :value="__('Name')" class="input-label" />
-                <x-text-input id="name" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" class="input-field" />
-                <x-input-error :messages="$errors->get('name')" class="error-text" />
-            </div>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-            <!-- Email Address -->
-            <div class="input-group mt-4">
-                <x-input-label for="email" :value="__('Email')" class="input-label" />
-                <x-text-input id="email" type="email" name="email" :value="old('email')" required autocomplete="username" class="input-field" />
-                <x-input-error :messages="$errors->get('email')" class="error-text" />
-            </div>
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-            <!-- Password -->
-            <div class="input-group mt-4">
-                <x-input-label for="password" :value="__('Password')" class="input-label" />
-                <x-text-input id="password" type="password" name="password" required autocomplete="new-password" class="input-field" />
-                <x-input-error :messages="$errors->get('password')" class="error-text" />
-            </div>
-
-            <!-- Confirm Password -->
-            <div class="input-group mt-4">
-                <x-input-label for="password_confirmation" :value="__('Confirm Password')" class="input-label" />
-                <x-text-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="input-field" />
-                <x-input-error :messages="$errors->get('password_confirmation')" class="error-text" />
-            </div>
-
-            <!-- Register Actions -->
-            <div class="flex items-center justify-between mt-4">
-                <a href="{{ route('login') }}" class="already-registered-link">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-primary-button class="register-button">
-                    {{ __('Register') }}
-                </x-primary-button>
-            </div>
-        </form>
-    </section>
-
-    <!-- Custom styles for registration page -->
     <style>
         .content {
             max-width: 400px;
@@ -117,4 +84,57 @@
             font-size: 0.85rem;
         }
     </style>
-</x-guest-layout>
+</head>
+<body>
+    <section class="content register-content">
+        <h1 class="register-title">Create a New Account</h1>
+
+        <form method="POST" action="{{ route('register') }}" class="register-form">
+            @csrf
+
+            <!-- Name -->
+            <div class="input-group">
+                <label for="name" class="input-label">Name</label>
+                <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" class="input-field">
+                @error('name')
+                    <span class="error-text">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Email Address -->
+            <div class="input-group mt-4">
+                <label for="email" class="input-label">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="input-field">
+                @error('email')
+                    <span class="error-text">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Password -->
+            <div class="input-group mt-4">
+                <label for="password" class="input-label">Password</label>
+                <input id="password" type="password" name="password" required autocomplete="new-password" class="input-field">
+                @error('password')
+                    <span class="error-text">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="input-group mt-4">
+                <label for="password_confirmation" class="input-label">Confirm Password</label>
+                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="input-field">
+                @error('password_confirmation')
+                    <span class="error-text">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Register Actions -->
+            <div class="flex items-center justify-between mt-4">
+                <a href="{{ route('login') }}" class="already-registered-link">Already registered?</a>
+
+                <button type="submit" class="register-button">Register</button>
+            </div>
+        </form>
+    </section>
+</body>
+</html>

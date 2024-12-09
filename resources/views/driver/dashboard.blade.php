@@ -88,7 +88,6 @@
                 <th>Current Location</th>
                 <th>Destination</th>
                 <th>Status</th>
-                <th>Parcel Location</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -100,22 +99,12 @@
                     <td>{{ $order->current_location }}</td>
                     <td>{{ $order->destination }}</td>
                     <td>{{ $order->status }}</td>
-                    <td>{{ $order->parcel_location ?? 'Not updated' }}</td>
                     <td class="actions">
-                    <!-- Form to update parcel location -->
-                        <form action="{{ route('driver.orders.update_location', $order->id) }}" method="POST" class="update-form">
-                            @csrf
-                            @method('PATCH')
-                            <input type="text" name="parcel_location" placeholder="Enter parcel location" value="{{ $order->parcel_location }}">
-                            <button type="submit">Update Parcel Location</button>
-                        </form>
-
                         <!-- Form to update order status -->
                         <form action="{{ route('driver.driver.orders.update_status', $order->id) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <select name="status" onchange="this.form.submit()">
-                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="in_transit" {{ $order->status == 'in_transit' ? 'selected' : '' }}>In Transit</option>
                                 <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
                             </select>
@@ -124,13 +113,10 @@
                             </noscript>
                         </form>
                     </td>
-
-
-                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="empty-row">No orders assigned to you yet.</td>
+                    <td colspan="6" class="empty-row">No orders assigned to you yet.</td>
                 </tr>
             @endforelse
         </tbody>

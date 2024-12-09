@@ -58,4 +58,6 @@ class LocationFeeController extends Controller
         $locationFee->delete();
         return redirect()->route('location-fees.index')->with('success', 'Location fee deleted successfully.');
     }
+
+
 }

@@ -129,9 +129,10 @@
                             @csrf
                             @method('PATCH')
 
-                            <!-- Dynamic Reason -->
-                            <input type="hidden" name="cancel_reason" id="finalCancelReason">
+                            <input type="hidden" name="cancel_reason" id="finalCancelReason"> <!-- For resolved reason -->
+                            <input type="hidden" name="other_reason" id="otherReasonInputHidden"> <!-- To store the 'Other' reason -->
 
+                            <!-- Radio Buttons -->
                             <label for="cancel_reason">Reason for Cancellation:</label>
                             <div>
                                 <input type="radio" name="reason_option" value="Out of Stock" id="reason_out_of_stock"> Out of Stock<br>
@@ -139,15 +140,18 @@
                                 <input type="radio" name="reason_option" value="Other" id="reason_other"> Other<br>
                             </div>
 
+                            <!-- 'Other' Input -->
                             <div id="otherReasonContainer" style="display: none;">
                                 <label for="other_reason">Specify Reason:</label>
-                                <input type="text" id="otherReasonInput">
+                                <input type="text" id="otherReasonInput" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
                             </div>
 
                             <button type="submit" class="btn btn-danger">Submit</button>
-                            <button type="button" onclick="closeModal()" class="btn">Close</button>
+                            <button type="button" onclick="closeModal()" class="btn btn-secondary">Close</button>
                         </form>
+
                     </div>
+                    
 
 
 
@@ -285,6 +289,7 @@
         const otherReasonContainer = document.getElementById('otherReasonContainer');
         const otherReasonInput = document.getElementById('otherReasonInput');
         const finalCancelReason = document.getElementById('finalCancelReason');
+        const cancelModal = document.getElementById('cancelModal');
 
         // Add change listeners to the radio buttons
         radioOptions.forEach((radio) => {
@@ -297,7 +302,7 @@
                 } else {
                     // Hide the "Other" input field and update the hidden input value
                     otherReasonContainer.style.display = 'none';
-                    finalCancelReason.value = this.value;
+                    finalCancelReason.value = this.value; // Set the reason
                     otherReasonInput.value = ''; // Clear "Other" input
                 }
             });
@@ -312,22 +317,33 @@
 
         // Validate the form submission
         document.getElementById('cancelForm').addEventListener('submit', function (e) {
-            if (!finalCancelReason.value.trim()) {
+            const selectedReason = document.querySelector('input[name="reason_option"]:checked');
+            if (!selectedReason || (selectedReason.value === 'Other' && !otherReasonInput.value.trim())) {
                 alert('Please specify a reason for cancellation.');
-                e.preventDefault(); // Prevent submission if no reason is provided
+                e.preventDefault(); // Prevent submission if no valid reason is provided
+                return;
             }
         });
     });
 
+    // Show modal and set form action dynamically
     function showCancelModal(orderId) {
         const form = document.getElementById('cancelForm');
         form.action = `/admin/orders/${orderId}/cancel`; // Set the dynamic action
         document.getElementById('cancelModal').style.display = 'block'; // Show the modal
+        document.getElementById('modalOverlay').style.display = 'block'; // Show overlay for better UX
     }
 
+    // Hide modal and reset input fields
     function closeModal() {
         document.getElementById('cancelModal').style.display = 'none'; // Hide the modal
+        document.getElementById('modalOverlay').style.display = 'none'; // Hide overlay
+        document.querySelectorAll('input[name="reason_option"]').forEach((radio) => (radio.checked = false)); // Reset radios
+        document.getElementById('otherReasonInput').value = ''; // Clear the "Other" input
+        document.getElementById('finalCancelReason').value = ''; // Reset the final reason
+        document.getElementById('otherReasonContainer').style.display = 'none'; // Hide the "Other" field
     }
+
 
 
 </script>

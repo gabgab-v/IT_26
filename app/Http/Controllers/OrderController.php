@@ -292,30 +292,37 @@ class OrderController extends Controller
     
     public function cancel(Request $request, Order $order)
     {
-        \Log::info('Request Data:', $request->all()); // Log the incoming request
-    
+        // Log the incoming request data for debugging
+        \Log::info('Incoming Cancel Request:', $request->all());
+        
+        // Validate the request data
         $request->validate([
             'cancel_reason' => 'required|string|max:255',
             'other_reason' => 'nullable|string|max:255',
         ]);
     
-        // Override cancel_reason if "Other" is selected and other_reason is provided
+        // Resolve the final cancel reason
         $cancelReason = $request->cancel_reason;
         if ($cancelReason === 'Other' && $request->filled('other_reason')) {
             $cancelReason = $request->other_reason;
         }
     
-        \Log::info('Resolved Cancel Reason:', ['reason' => $cancelReason]); // Log the resolved reason
+        // Log the resolved cancel reason
+        \Log::info('Final Cancel Reason:', ['cancel_reason' => $cancelReason]);
     
-        // Update the order
+        // Update the order status and cancel reason
         $order->update([
             'cancel_reason' => $cancelReason,
             'status' => 'cancelled',
-            'is_archived' => false,
+            'is_archived' => false, // Ensure this aligns with your business logic
         ]);
     
-        return redirect()->route('admin.orders.index')->with('success', 'Order cancelled successfully.');
+        // Redirect back with a success message
+        return redirect()
+            ->route('admin.orders.index')
+            ->with('success', 'Order cancelled successfully.');
     }
+    
     
     
     

@@ -10,10 +10,9 @@ use App\Http\Controllers\Driver\DriverAuthController;
 use App\Http\Controllers\Driver\DriverDashboardController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\LocationFeeController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'showPage'])->name('home');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -100,6 +99,10 @@ Route::prefix('driver')->name('driver.')->group(function () {
 
 // Warehouse
 Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
+
+//Shiping Rate
+
+
 
 
 require __DIR__.'/auth.php';

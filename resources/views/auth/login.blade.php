@@ -1,51 +1,19 @@
-<x-guest-layout>
-    <section class="content login-content">
-        <h1 class="login-title">Login to Your Account</h1>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+    <title>{{ config('app.name', 'Laravel') }} - Login</title>
 
-        <form method="POST" action="{{ route('login') }}" class="login-form">
-            @csrf
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-            <!-- Email Address -->
-            <div class="input-group">
-                <x-input-label for="email" :value="__('Email')" class="input-label" />
-                <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" class="input-field" />
-                <x-input-error :messages="$errors->get('email')" class="error-text" />
-            </div>
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-            <!-- Password -->
-            <div class="input-group mt-4">
-                <x-input-label for="password" :value="__('Password')" class="input-label" />
-                <x-text-input id="password" type="password" name="password" required autocomplete="current-password" class="input-field" />
-                <x-input-error :messages="$errors->get('password')" class="error-text" />
-            </div>
-
-            <!-- Remember Me -->
-            <div class="flex items-center mt-4">
-                <label for="remember_me" class="checkbox-label">
-                    <input id="remember_me" type="checkbox" class="checkbox-input" name="remember">
-                    <span>{{ __('Remember me') }}</span>
-                </label>
-            </div>
-
-            <!-- Login Actions -->
-            <div class="flex items-center justify-between mt-4">
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="forgot-password-link">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-primary-button class="login-button">
-                    {{ __('Log in') }}
-                </x-primary-button>
-            </div>
-        </form>
-    </section>
-
-    <!-- Add custom styles for login page here -->
     <style>
         .content {
             max-width: 400px;
@@ -128,4 +96,54 @@
             font-size: 0.85rem;
         }
     </style>
-</x-guest-layout>
+</head>
+<body>
+    <section class="content login-content">
+        <h1 class="login-title">Login to Your Account</h1>
+
+        <!-- Session Status -->
+        @if (session('status'))
+            <div class="mb-4">{{ session('status') }}</div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}" class="login-form">
+            @csrf
+
+            <!-- Email Address -->
+            <div class="input-group">
+                <label for="email" class="input-label">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" class="input-field">
+                @error('email')
+                    <span class="error-text">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Password -->
+            <div class="input-group mt-4">
+                <label for="password" class="input-label">Password</label>
+                <input id="password" type="password" name="password" required autocomplete="current-password" class="input-field">
+                @error('password')
+                    <span class="error-text">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Remember Me -->
+            <div class="flex items-center mt-4">
+                <label for="remember_me" class="checkbox-label">
+                    <input id="remember_me" type="checkbox" class="checkbox-input" name="remember">
+                    <span>Remember me</span>
+                </label>
+            </div>
+
+            <!-- Login Actions -->
+            <div class="flex items-center justify-between mt-4">
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="forgot-password-link">Forgot your password?</a>
+                @endif
+
+                <button type="submit" class="login-button">Log in</button>
+            </div>
+        </form>
+    </section>
+</body>
+</html>
