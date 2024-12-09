@@ -26,6 +26,7 @@ class Order extends Model
         'delivered_at',
         'destination',
         'base_total_price',
+        'user_id', 
     ];
 
     protected $casts = [
@@ -97,6 +98,8 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    
 
 
 

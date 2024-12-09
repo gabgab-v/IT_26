@@ -84,12 +84,15 @@
                     </td>
                     <td>
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="search-btn">View</a>
-                        <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
-                        @if ($order->status !== 'cancelled')
-                            <!-- Cancel Order Button -->
-                            <button class="btn btn-danger" onclick="showCancelModal({{ $order->id }})">Cancel Order</button>
-                        @else
-                            <span>Cancelled</span>
+
+                        @if ($order->status !== 'delivered')
+                            <a href="{{ route('admin.orders.edit', $order->id) }}" class="search-btn">Edit</a>
+                            @if ($order->status !== 'cancelled')
+                                <!-- Cancel Order Button -->
+                                <button class="btn btn-danger" onclick="showCancelModal({{ $order->id }})">Cancel Order</button>
+                            @else
+                                <span>Cancelled</span>
+                            @endif
                         @endif
 
                         @if ($order->status === 'Pending')
@@ -122,6 +125,7 @@
                             </form>
                         @endif
                     </td>
+
                     <!-- Modal for Cancel Order -->
                     <div id="cancelModal" style="display: none;">
                         <h2>Cancel Order</h2>

@@ -68,8 +68,8 @@
         <thead>
             <tr>
                 <th>Order Number</th>
-                <th>Customer</th>
-                <th>Current Location</th>
+                <th>User</th>
+                <th>Warehouse</th>
                 <th>Destination</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -80,10 +80,12 @@
                 @if ($order->status !== 'cancelled')
                     <tr>
                         <td>{{ $order->order_number }}</td>
-                        <td>{{ $order->customer->name ?? 'No customer' }}</td>
-                        <td>{{ $order->current_location }}</td>
+                        <td>
+                            {{ optional($order->user)->name ?? 'No user assigned' }} <!-- Check user name -->
+                        </td>
+                        <td>{{ optional($order->warehouse)->name ?? 'No warehouse assigned' }}</td>
                         <td>{{ $order->destination }}</td>
-                        <td>{{ $order->status }}</td>
+                        <td>{{ ucfirst($order->status) }}</td>
                         <td class="actions">
                             <!-- Form to update order status -->
                             <form action="{{ route('driver.driver.orders.update_status', $order->id) }}" method="POST">
