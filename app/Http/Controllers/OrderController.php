@@ -13,7 +13,7 @@ use App\Models\Warehouse;
 use App\Models\User;
 use App\Models\ParcelLocation;
 use Carbon\Carbon;
-use App\Models\User;
+
 
 
 
