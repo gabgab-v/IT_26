@@ -46,22 +46,6 @@
         .logout-btn:hover {
             background-color: #ff1a1a;
         }
-        .update-form input[type="text"] {
-            padding: 5px;
-            margin-right: 5px;
-            width: 70%;
-        }
-        .update-form button {
-            padding: 5px 10px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .update-form button:hover {
-            background-color: #45a049;
-        }
         .empty-row {
             text-align: center;
             font-style: italic;
@@ -93,27 +77,29 @@
         </thead>
         <tbody>
             @forelse ($orders as $order)
-                <tr>
-                    <td>{{ $order->order_number }}</td>
-                    <td>{{ $order->customer->name ?? 'No customer' }}</td>
-                    <td>{{ $order->current_location }}</td>
-                    <td>{{ $order->destination }}</td>
-                    <td>{{ $order->status }}</td>
-                    <td class="actions">
-                        <!-- Form to update order status -->
-                        <form action="{{ route('driver.driver.orders.update_status', $order->id) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <select name="status" onchange="this.form.submit()">
-                                <option value="in_transit" {{ $order->status == 'in_transit' ? 'selected' : '' }}>In Transit</option>
-                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
-                            </select>
-                            <noscript>
-                                <button type="submit">Update Status</button>
-                            </noscript>
-                        </form>
-                    </td>
-                </tr>
+                @if ($order->status !== 'cancelled')
+                    <tr>
+                        <td>{{ $order->order_number }}</td>
+                        <td>{{ $order->customer->name ?? 'No customer' }}</td>
+                        <td>{{ $order->current_location }}</td>
+                        <td>{{ $order->destination }}</td>
+                        <td>{{ $order->status }}</td>
+                        <td class="actions">
+                            <!-- Form to update order status -->
+                            <form action="{{ route('driver.driver.orders.update_status', $order->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="in_transit" {{ $order->status == 'in_transit' ? 'selected' : '' }}>In Transit</option>
+                                    <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                </select>
+                                <noscript>
+                                    <button type="submit">Update Status</button>
+                                </noscript>
+                            </form>
+                        </td>
+                    </tr>
+                @endif
             @empty
                 <tr>
                     <td colspan="6" class="empty-row">No orders assigned to you yet.</td>

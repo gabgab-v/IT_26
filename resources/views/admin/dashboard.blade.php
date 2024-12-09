@@ -7,6 +7,10 @@
         <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; background-color: #091057; padding: 15px; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);">
             <h1 style="font-size: 2em; color: #ffffff; margin: 0;">Admin Dashboard</h1>
 
+            <a href="{{ route('admin.orders.index') }}" style="background-color: #024CAA; color: white; padding: 15px 25px; border-radius: 5px; text-decoration: none; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);">
+                Manage Orders
+            </a>
+
             <!-- Logout Button -->
             <a href="{{ route('admin.logout') }}"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
@@ -36,26 +40,41 @@
             </div>
         </div>
 
+        <!-- Date Range Filter Form -->
+        <form id="date-filter-form" method="GET" action="{{ route('admin.dashboard') }}" style="margin-top: 40px; display: flex; gap: 10px; justify-content: flex-end;">
+            <label for="date_ordered_from" style="align-self: center;">Date From:</label>
+            <input type="date" name="date_ordered_from" id="date_ordered_from" value="{{ request('date_ordered_from') }}" style="padding: 5px;">
+
+            <label for="date_ordered_to" style="align-self: center;">Date To:</label>
+            <input type="date" name="date_ordered_to" id="date_ordered_to" value="{{ request('date_ordered_to') }}" style="padding: 5px;">
+
+            <button type="submit" style="padding: 5px 15px; background-color: #024CAA; color: white; border: none; border-radius: 5px;">
+                Filter
+            </button>
+        </form>
+
+
+        <!-- Charts Section -->
+        <div class="charts-section" style="margin-top: 40px;">
+            <h2 style="font-size: 1.8em; color: #091057; border-bottom: 2px solid #091057; padding-bottom: 10px;">
+                Analytics
+            </h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+                <div style="flex: 1; min-width: 300px;">
+                    <canvas id="ordersChart"></canvas>
+                </div>
+                <div style="flex: 1; min-width: 300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Recent Orders Table -->
         <div class="recent-orders" style="margin-top: 40px;">
             <h2 style="font-size: 1.8em; color: #091057; border-bottom: 2px solid #091057; padding-bottom: 10px;">
                 Recent Orders
             </h2>
 
-            <!-- Date Range Filter Form -->
-            <form method="GET" action="{{ route('admin.dashboard') }}" style="margin-bottom: 20px; display: flex; gap: 10px;">
-                <label for="date_ordered_from" style="align-self: center;">Date From:</label>
-                <input type="date" name="date_ordered_from" id="date_ordered_from" value="{{ request('date_ordered_from') }}" style="padding: 5px;">
-
-                <label for="date_ordered_to" style="align-self: center;">Date To:</label>
-                <input type="date" name="date_ordered_to" id="date_ordered_to" value="{{ request('date_ordered_to') }}" style="padding: 5px;">
-
-                <button type="submit" style="padding: 5px 15px; background-color: #024CAA; color: white; border: none; border-radius: 5px;">
-                    Filter
-                </button>
-            </form>
-
-            <!-- Recent Orders Table -->
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
                 <thead>
                     <tr style="background-color: #f4f4f4; color: #333; text-align: left;">
@@ -83,13 +102,52 @@
                 </tbody>
             </table>
         </div>
-
-        
-        <!-- Navigation Links -->
-        <div class="navigation-links" style="margin-top: 40px; display: flex; gap: 20px; justify-content: center;">
-            <a href="{{ route('admin.orders.index') }}" style="background-color: #024CAA; color: white; padding: 15px 25px; border-radius: 5px; text-decoration: none; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);">
-                Manage Orders
-            </a>
-        </div>
     </div>
+
+    <!-- Chart.js Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Orders Chart
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    const ordersChart = new Chart(ordersCtx, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($chartData['dates']) !!},
+            datasets: [{
+                label: 'Orders',
+                data: {!! json_encode($chartData['orders']) !!},
+                borderColor: '#024CAA',
+                backgroundColor: 'rgba(2, 76, 170, 0.1)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            }
+        }
+    });
+
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($chartData['dates']) !!},
+            datasets: [{
+                label: 'Revenue',
+                data: {!! json_encode($chartData['revenue']) !!},
+                backgroundColor: '#024CAA'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            }
+        }
+    });
+</script>
+
 @endsection

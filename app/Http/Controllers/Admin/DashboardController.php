@@ -12,30 +12,43 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // Get date range filters from the request
-        $dateRangeFrom = $request->input('date_ordered_from');
-        $dateRangeTo = $request->input('date_ordered_to');
-
+        // Get date range filters
+        $dateFrom = $request->input('date_ordered_from');
+        $dateTo = $request->input('date_ordered_to');
+    
         $query = Order::query();
-
-        if ($dateRangeFrom && $dateRangeTo) {
-            $startDate = Carbon::parse($dateRangeFrom)->startOfDay();
-            $endDate = Carbon::parse($dateRangeTo)->endOfDay();
-
-            $query->whereBetween('date_ordered', [$startDate, $endDate])
-                  ->orWhereBetween('delivered_at', [$startDate, $endDate]);
+    
+        if ($dateFrom && $dateTo) {
+            $startDate = Carbon::parse($dateFrom)->startOfDay();
+            $endDate = Carbon::parse($dateTo)->endOfDay();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
         }
-
-        // Calculate total orders and revenue based on the query
+    
+        // Fetch data for metrics
         $totalOrders = $query->count();
         $totalRevenue = $query->sum('total_price');
-
-        // Total customers (not filtered by date range)
-        $totalCustomers = Customer::count();
-
-        // Get the most recent orders filtered by date range
         $recentOrders = $query->latest()->take(5)->get();
-
-        return view('admin.dashboard', compact('totalOrders', 'totalRevenue', 'totalCustomers', 'recentOrders'));
+        $totalCustomers = Customer::count();
+    
+        // Prepare data for charts
+        $orders = $query->get();
+        $chartData = [
+            'dates' => [],
+            'orders' => [],
+            'revenue' => [],
+        ];
+    
+        $groupedOrders = $orders->groupBy(function ($order) {
+            return $order->created_at->format('Y-m-d');
+        });
+    
+        foreach ($groupedOrders as $date => $dailyOrders) {
+            $chartData['dates'][] = $date;
+            $chartData['orders'][] = $dailyOrders->count();
+            $chartData['revenue'][] = $dailyOrders->sum('total_price');
+        }
+    
+        return view('admin.dashboard', compact('totalOrders', 'totalRevenue', 'totalCustomers', 'recentOrders', 'chartData'));
     }
+    
 }
