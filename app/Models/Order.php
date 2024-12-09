@@ -25,6 +25,8 @@ class Order extends Model
         'is_delivered',
         'duration_of_order',
         'delivered_at',
+        'destination',
+        'base_total_price',
     ];
 
     protected $casts = [
