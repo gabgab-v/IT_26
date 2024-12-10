@@ -38,8 +38,27 @@
             <label for="date_ordered_to">Date To:</label>
             <input type="date" name="date_ordered_to" id="date_ordered_to" value="{{ request('date_ordered_to') }}">
 
+            <label for="status">Status:</label>
+            <select name="status" id="status">
+                <option value="">All</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="ready_for_shipping" {{ request('status') == 'ready_for_shipping' ? 'selected' : '' }}>Ready for Shipping</option>
+                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+            </select>
+
+            <label for="driver_id">Driver:</label>
+            <select name="driver_id" id="driver_id">
+                <option value="">All</option>
+                @foreach ($drivers as $driver)
+                    <option value="{{ $driver->id }}" {{ request('driver_id') == $driver->id ? 'selected' : '' }}>{{ $driver->name }}</option>
+                @endforeach
+            </select>
+
+
             <button type="submit" class="search-btn">Filter</button>
         </form>
+
 
         <a href="{{ route('admin.orders.create') }}" class="search-btn">Create New Order</a>
 

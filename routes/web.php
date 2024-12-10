@@ -15,6 +15,7 @@ use App\Http\Controllers\HomeController;
 Route::get('/', [HomeController::class, 'showPage'])->name('home');
 
 // Admin Routes
+// Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     // Guest-only routes for Admin Login
     Route::middleware('guest:admin')->group(function () {
@@ -26,42 +27,51 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-        // Dashboard, Order, and Profile routes restricted to admin
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
-        Route::get('orders/delivered', [OrderController::class, 'delivered'])->name('orders.delivered');
-        Route::resource('orders', OrderController::class); // Admin access for CRUD operations
-        
-        Route::resource('warehouses', WarehouseController::class);
-        Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('admin.orders.update_location');
-        Route::patch('orders/{order}/mark-delivered', [OrderController::class, 'markAsDelivered'])->name('admin.orders.mark_delivered');
-        Route::post('/orders/{order}/process', [OrderController::class, 'processOrder'])->name('orders.process');
-        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-        Route::get('/warehouse/orders', [OrderController::class, 'warehouseView'])->name('admin_warehouse.orders.index');
+        // Admin-only routes
+        Route::middleware('role:admin')->group(function () {
+            Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
+            Route::get('orders/delivered', [OrderController::class, 'delivered'])->name('orders.delivered');
+            Route::resource('orders', OrderController::class);
+            Route::resource('warehouses', WarehouseController::class);
+            Route::resource('location-fees', LocationFeeController::class);
 
-        Route::post('/warehouse/orders/{order}/ready-for-shipping', [OrderController::class, 'confirmReadyForShipping'])->name('admin.orders.ready_for_shipping');
+            Route::post('/orders/{order}/process', [OrderController::class, 'processOrder'])->name('orders.process');
+            Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
+            Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+            Route::patch('orders/{order}/cancel', [OrderController::class, 'destroy'])->name('orders.destroy');
 
-        Route::get('/warehouse/orders', [OrderController::class, 'warehouseView'])->name('admin.warehouse.orders.list');
+            // Assign Driver routes
+            Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])->name('orders.assign_driver_page');
+            Route::post('/orders/{order}/assign-driver', [OrderController::class, 'assignDriver'])->name('orders.assign_driver');
 
-        // Location Fees
-        Route::resource('location-fees', LocationFeeController::class); // Explicitly resolves the namespace
+            // Update Order Location
+            Route::patch('orders/{order}/update-location', [OrderController::class, 'updateLocation'])->name('orders.update_location');
 
-        Route::patch('/orders/{order}/confirm_delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm_delivery');
+            // Mark as Delivered
+            Route::patch('orders/{order}/mark-delivered', [OrderController::class, 'markAsDelivered'])->name('orders.mark_delivered');
+        });
 
+        // Routes accessible by both Admin and Staff
+        Route::middleware('role:admin,staff')->group(function () {
+            Route::get('orders', [OrderController::class, 'index'])->name('orders.index'); // View orders
+            Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show'); // View single order
+            Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        });
 
-        // Assign Driver routes
-        Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])
-            ->name('orders.assign_driver_page');
-        Route::post('/orders/{order}/assign-driver', [OrderController::class, 'assignDriver'])->name('orders.assign_driver');
+        // Warehouse-only routes
+        Route::middleware('role:warehouse')->group(function () {
+            Route::get('/warehouse/orders', [OrderController::class, 'warehouseView'])->name('warehouse.orders.index');
+            Route::post('/warehouse/orders/{order}/ready-for-shipping', [OrderController::class, 'confirmReadyForShipping'])->name('orders.ready_for_shipping');
+        });
 
-
-        // Profile management for admins
+        // Common Profile Management
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::patch('orders/{order}/cancel', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
     });
 });
+
 
 Route::post('/orders/{order}/update-location', [OrderController::class, 'updateParcelLocation'])->name('orders.updateLocation');
 

@@ -12,11 +12,12 @@ class AdminSeeder extends Seeder
     {
         // Create a Warehouse Admin
         Admin::create([
-            'name' => 'Warehouse Admin',
-            'email' => 'warehouse@example.com',
-            'password' => Hash::make('password123'), // Hash the password for security
-            'role' => 'warehouse',  // Assign the warehouse role
+            'name' => 'Staff User',
+            'email' => 'staff@example.com',
+            'password' => Hash::make('staffpassword123'),
+            'role' => 'staff',
         ]);
+        
     }
 }
 

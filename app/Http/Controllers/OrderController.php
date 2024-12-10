@@ -25,9 +25,10 @@ class OrderController extends Controller
         $request->validate([
             'date_ordered_from' => 'nullable|date|before_or_equal:date_ordered_to',
             'date_ordered_to' => 'nullable|date|after_or_equal:date_ordered_from',
+            'status' => 'nullable|string|in:pending,ready_for_shipping,delivered,cancelled', // Add status validation
         ]);
     
-        $query = Order::with(['customer', 'warehouse', 'driver']) // Include driver relationship
+        $query = Order::with(['customer', 'warehouse', 'driver'])
                       ->where('is_archived', false);
     
         // Filter by delivery status
@@ -35,35 +36,34 @@ class OrderController extends Controller
             $query->where('is_delivered', $request->is_delivered);
         }
     
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('driver_id')) {
+            $query->where('driver_id', $request->driver_id);
+        }
+        
+    
         // Filter by date range
         if ($request->filled('date_ordered_from') && $request->filled('date_ordered_to')) {
             $dateOrderedFrom = Carbon::parse($request->input('date_ordered_from'))->startOfDay();
             $dateOrderedTo = Carbon::parse($request->input('date_ordered_to'))->endOfDay();
     
-            // Apply the filter
             $query->where(function ($q) use ($dateOrderedFrom, $dateOrderedTo) {
                 $q->whereBetween('date_ordered', [$dateOrderedFrom, $dateOrderedTo])
                   ->orWhereBetween('delivered_at', [$dateOrderedFrom, $dateOrderedTo]);
             });
-        } else {
-            \Log::info('Date range not applied: Missing parameters date_ordered_from or date_ordered_to.');
         }
     
-        // Log the query and bindings
-        \Log::info('SQL Query:', [$query->toSql()]);
-        \Log::info('Query Bindings:', $query->getBindings());
+        // Additional filters can be added here
     
-        // Execute and log the results
         $orders = $query->get();
-        \Log::info('Query Results:', $orders->toArray());
-    
-        // Get all drivers
         $drivers = Driver::all();
     
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
-    
-    
     
 
     // Show the form for creating a new order

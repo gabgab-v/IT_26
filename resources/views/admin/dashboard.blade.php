@@ -38,33 +38,46 @@
                 <h2>Total Parcel Prices (₱)</h2>
                 <p style="font-size: 1.5em; font-weight: bold;">₱{{ number_format($totalRevenue, 2) }}</p>
             </div>
+            <div class="card" style="flex: 1; background-color: #024CAA; color: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); text-align: center;">
+                <h2>Base Total Prices (₱)</h2>
+                <p style="font-size: 1.5em; font-weight: bold;">₱{{ number_format($totalBaseRevenue, 2) }}</p>
+            </div>
         </div>
 
+
         <!-- Date Range Filter Form -->
+        <!-- Improved Date Range Filter Form -->
         <form id="date-filter-form" method="GET" action="{{ route('admin.dashboard') }}" style="margin-top: 40px; display: flex; gap: 10px; justify-content: flex-end;">
             <label for="date_ordered_from" style="align-self: center;">Date From:</label>
-            <input type="date" name="date_ordered_from" id="date_ordered_from" value="{{ request('date_ordered_from') }}" style="padding: 5px;">
+            <input type="date" name="date_ordered_from" id="date_ordered_from" value="{{ request('date_ordered_from') ?? $dateFrom }}" style="padding: 5px;">
 
             <label for="date_ordered_to" style="align-self: center;">Date To:</label>
-            <input type="date" name="date_ordered_to" id="date_ordered_to" value="{{ request('date_ordered_to') }}" style="padding: 5px;">
+            <input type="date" name="date_ordered_to" id="date_ordered_to" value="{{ request('date_ordered_to') ?? $dateTo }}" style="padding: 5px;">
 
             <button type="submit" style="padding: 5px 15px; background-color: #024CAA; color: white; border: none; border-radius: 5px;">
-                Filter
+                Apply Filter
             </button>
         </form>
 
 
-        <!-- Charts Section -->
+
+
         <div class="charts-section" style="margin-top: 40px;">
             <h2 style="font-size: 1.8em; color: #091057; border-bottom: 2px solid #091057; padding-bottom: 10px;">
                 Analytics
             </h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
-                <div style="flex: 1; min-width: 300px;">
-                    <canvas id="ordersChart"></canvas>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <canvas id="ordersChart" style="width: 100%; height: 300px;"></canvas>
                 </div>
-                <div style="flex: 1; min-width: 300px;">
-                    <canvas id="revenueChart"></canvas>
+                <div>
+                    <canvas id="revenueChart" style="width: 100%; height: 300px;"></canvas>
+                </div>
+                <div>
+                    <canvas id="baseRevenueChart" style="width: 100%; height: 300px;"></canvas>
+                </div>
+                <div>
+                    <canvas id="customersChart" style="width: 100%; height: 300px;"></canvas>
                 </div>
             </div>
         </div>
@@ -107,47 +120,109 @@
     <!-- Chart.js Script -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    // Orders Chart
-    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
-    const ordersChart = new Chart(ordersCtx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($chartData['dates']) !!},
-            datasets: [{
-                label: 'Orders',
-                data: {!! json_encode($chartData['orders']) !!},
-                borderColor: '#024CAA',
-                backgroundColor: 'rgba(2, 76, 170, 0.1)',
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-            }
-        }
-    });
+        // Orders Chart
+        const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+        const ordersChart = new Chart(ordersCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($chartData['dates']) !!},
+                datasets: [{
+                    label: 'Orders',
+                    data: {!! json_encode($chartData['orders']) !!},
+                    borderColor: '#024CAA',
+                    backgroundColor: 'rgba(2, 76, 170, 0.1)',
+                    fill: true,
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: { display: true },
+                    y: { display: true },
+                },
+            },
+        });
 
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    const revenueChart = new Chart(revenueCtx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($chartData['dates']) !!},
-            datasets: [{
-                label: 'Revenue',
-                data: {!! json_encode($chartData['revenue']) !!},
-                backgroundColor: '#024CAA'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-            }
-        }
-    });
-</script>
+        // Revenue Chart (Total Price)
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($chartData['dates']) !!},
+                datasets: [{
+                    label: 'Total Price',
+                    data: {!! json_encode($chartData['total_price']) !!},
+                    backgroundColor: '#024CAA',
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: { display: true },
+                    y: { display: true },
+                },
+            },
+        });
+
+        // Base Revenue Chart
+        const baseRevenueCtx = document.getElementById('baseRevenueChart').getContext('2d');
+        const baseRevenueChart = new Chart(baseRevenueCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($chartData['dates']) !!},
+                datasets: [{
+                    label: 'Base Total Price',
+                    data: {!! json_encode($chartData['base_total_price']) !!},
+                    backgroundColor: '#FFA500',
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: { display: true },
+                    y: { display: true },
+                },
+            },
+        });
+
+        // Customers Chart
+        const customersCtx = document.getElementById('customersChart').getContext('2d');
+        const customersChart = new Chart(customersCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($chartData['dates']) !!},
+                datasets: [{
+                    label: 'Customers',
+                    data: {!! json_encode($chartData['customers']) !!},
+                    borderColor: '#FFA500',
+                    backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                    fill: true,
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: { display: true },
+                    y: { display: true },
+                },
+            },
+        });
+    </script>
+
+
+
+
 
 @endsection

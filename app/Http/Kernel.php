@@ -68,4 +68,8 @@ class Kernel extends HttpKernel
         'auth:admin' => \App\Http\Middleware\AuthenticateAdmin::class,
         'guest:admin' => \App\Http\Middleware\RedirectIfAuthenticatedAdmin::class, // Custom guest admin middleware
     ];
+
+    protected $routeMiddleware = [
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+    ];
 }
