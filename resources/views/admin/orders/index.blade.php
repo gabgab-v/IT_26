@@ -18,6 +18,8 @@
             <a href="{{ route('admin.warehouses.index') }}" class="search-btn">Warehouse</a>
             <a href="{{ route('admin.orders.delivered') }}" class="search-btn">Delivered</a>
             <a href="{{ route('admin.location-fees.index') }}" class="btn btn-primary">Manage Location Fees</a>
+            <a href="{{ route('admin.drivers.pending') }}">Pending Drivers</a>
+
 
         </nav>
     </header>

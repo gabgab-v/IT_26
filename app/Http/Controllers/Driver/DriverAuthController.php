@@ -16,7 +16,6 @@ class DriverAuthController extends Controller
     {
         return view('driver.driver-login');
     }
-    
 
     // Handle login
     public function login(Request $request)
@@ -25,6 +24,20 @@ class DriverAuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+
+        $driver = Driver::where('email', $request->email)->first();
+
+        if (!$driver) {
+            return back()->withErrors([
+                'email' => 'No account found with this email.',
+            ]);
+        }
+
+        if ($driver->status !== 'approved') {
+            return back()->withErrors([
+                'email' => 'Your account is not yet approved by the admin.',
+            ]);
+        }
 
         if (Auth::guard('driver')->attempt($request->only('email', 'password'))) {
             return redirect()->route('driver.dashboard');
@@ -58,11 +71,10 @@ class DriverAuthController extends Controller
             'license' => $request->license,
             'vehicle' => $request->vehicle,
             'password' => Hash::make($request->password),
+            'status' => 'pending', // Default status for new registrations
         ]);
 
-        Auth::guard('driver')->login($driver);
-
-        return redirect()->route('driver.dashboard');
+        return redirect()->route('driver.login')->with('status', 'Registration successful! Your account is pending approval.');
     }
 
     // Logout method for drivers

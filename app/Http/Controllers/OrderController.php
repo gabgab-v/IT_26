@@ -469,7 +469,29 @@ class OrderController extends Controller
 
     }
     
+    public function pendingDrivers()
+    {
+        $drivers = Driver::where('status', 'pending')->get();
+        return view('admin.pending_drivers', compact('drivers'));
+    }
 
+    public function approveDriver($id)
+    {
+        $driver = Driver::findOrFail($id);
+        $driver->status = 'approved';
+        $driver->save();
+
+        return redirect()->route('admin.drivers.pending')->with('message', 'Driver approved successfully.');
+    }
+
+    public function rejectDriver($id)
+    {
+        $driver = Driver::findOrFail($id);
+        $driver->status = 'rejected';
+        $driver->save();
+
+        return redirect()->route('admin.drivers.pending')->with('message', 'Driver rejected successfully.');
+    }
 
 
 

@@ -41,6 +41,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
             Route::patch('orders/{order}/cancel', [OrderController::class, 'destroy'])->name('orders.destroy');
 
+            // Pending Drivers
+            Route::get('drivers/pending', [App\Http\Controllers\Admin\DriverController::class, 'pendingDrivers'])->name('drivers.pending');
+            Route::patch('drivers/{driver}/approve', [App\Http\Controllers\Admin\DriverController::class, 'approveDriver'])->name('drivers.approve');
+            Route::patch('drivers/{driver}/reject', [App\Http\Controllers\Admin\DriverController::class, 'rejectDriver'])->name('drivers.reject');
+
             // Assign Driver routes
             Route::get('orders/{order}/assign-driver', [OrderController::class, 'assignDriverPage'])->name('orders.assign_driver_page');
             Route::post('/orders/{order}/assign-driver', [OrderController::class, 'assignDriver'])->name('orders.assign_driver');
